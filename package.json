@@ -14,5 +14,8 @@
     "mongoose": "^5.5.5",
     "morgan": "~1.9.1",
     "superagent": "^5.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
   }
 }
