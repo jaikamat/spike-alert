@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('scryfall-downloader:server');
 var http = require('http');
+var mongoose = require('../database/index'); // Initialize DB
 
 /**
  * Get port from environment and store in Express.
