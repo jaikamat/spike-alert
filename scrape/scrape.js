@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
+const setCodeJSON = require('./setcodes.json');
 const fs = require('fs');
 const progressBar = require('progress');
 
@@ -56,25 +57,36 @@ function collectSetPageCardData($) {
     let rows = $('.cards ul > li');
     let cards = [];
 
+    const setName = $('h3')
+        .text()
+        .trim();
+
+    const setCode = setCodeJSON[setName];
+
+    console.log(setCode);
+
     rows.each(function(index, el) {
-        const title = $(this)
+        const name = $(this)
             .find('a')
             .text()
             .trim();
 
-        const price = $(this)
+        const price1 = $(this)
             .children('span:nth-child(2)')
             .text()
             .trim();
 
-        const foilPrice = $(this)
+        const price2 = $(this)
             .children('span:nth-child(3)')
             .text()
             .trim();
 
-        const setCode = null; // GET THE SETCODE FROM THE IMAGE LINK
-
-        // TODO: push to array and return
+        cards.push({
+            name: name,
+            price1: price1,
+            price2: price2,
+            setCode: setCode
+        });
     });
 
     return cards;
@@ -111,10 +123,10 @@ function findSetLinks($) {
 //     })
 //     .catch(err => console.log(err));
 
-// retrieveHTML(BASE_URL + '/sets/980')
-//     .then($ => {
-//         console.log(collectSetPageCardData($));
-//     })
-//     .catch(err => console.log(err));
+retrieveHTML(BASE_URL + '/sets/853')
+    .then($ => {
+        console.log(collectSetPageCardData($));
+    })
+    .catch(err => console.log(err));
 
-console.log(CardCS.getSetCode('//cardimage.cardsphere.com/cards/Sets/UDS/Goblin Gardener.jpg'));
+// console.log(CardCS.getSetCode('//cardimage.cardsphere.com/cards/Sets/UDS/Goblin Gardener.jpg'));
