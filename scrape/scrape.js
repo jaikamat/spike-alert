@@ -105,6 +105,7 @@ async function run() {
         userDataDir: './scrape/tmp' // Use to store session data
     };
 
+    // TODO: Create bar after setCode 'undefined' errors are handled properly
     // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
     //     total: 50
     // });
@@ -122,8 +123,6 @@ async function run() {
     const $_sets = cheerio.load(bodyHTML);
 
     const links = collectSetLinks($_sets);
-
-    // fs.writeFileSync('./scrape/scraped_data/links.json', JSON.stringify(links));
 
     // Iterate over links, collecting card data:
     for (let i = 0; i < links.length; i++) {
