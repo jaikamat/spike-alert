@@ -1,25 +1,26 @@
 {
-  "name": "scryfall-downloader",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
-    "moment": "^2.24.0",
-    "mongoose": "^5.5.5",
-    "morgan": "~1.9.1",
-    "progress": "^2.0.3",
-    "puppeteer": "^1.15.0",
-    "superagent": "^5.0.5"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.0"
-  }
+    "name": "scryfall-downloader",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node ./bin/www",
+        "scrape": "node ./scrape/scrape.js"
+    },
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.3",
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
+        "http-errors": "~1.6.3",
+        "jade": "~1.11.0",
+        "moment": "^2.24.0",
+        "mongoose": "^5.5.5",
+        "morgan": "~1.9.1",
+        "progress": "^2.0.3",
+        "puppeteer": "^1.15.0",
+        "superagent": "^5.0.5"
+    },
+    "devDependencies": {
+        "nodemon": "^1.19.0"
+    }
 }
