@@ -102,7 +102,7 @@ async function run() {
         args,
         headless: true,
         ignoreHTTPSErrors: true,
-        userDataDir: './scrape/tmp'
+        userDataDir: './scrape/tmp' // Use to store session data
     };
 
     // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
