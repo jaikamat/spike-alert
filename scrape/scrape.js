@@ -2,51 +2,13 @@ const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
 const setCodeJSON = require('./setcodes.json');
 const fs = require('fs');
-const progressBar = require('progress');
+const moment = require('moment');
+const ProgressBar = require('progress');
 
 const BASE_URL = 'https://www.cardsphere.com';
 
-/**
- * Wraps single-card data scraped from CardSphere
- */
-class CardCS {
-    constructor(card) {
-        this.name = card.name;
-        this.setCode = card.setCode;
-        this.price = card.price;
-        this.foilPrice = card.foilPrice;
-    }
-
-    /**
-     * Retrieves setcodes from CardSphere image uri's:
-     * Example: //cardimage.cardsphere.com/cards/Sets/4ED/Gaea's Liege.jpg
-     * @param {string} url
-     */
-    static getSetCode(url) {
-        // TODO:
-        // These image links have somewhat disparate setcodes, which may not be three letters
-        // One thing they share is having two or more uppercase non-numeric characters next to each other
-        let entries = url.split('/');
-
-        let setCode = entries.filter();
-
-        return;
-    }
-}
-
-/**
- * Fetches HTML for cheerio to parse
- * @param {string} url
- */
-async function retrieveHTML(url) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(url);
-    const bodyHTML = await page.evaluate(() => document.body.innerHTML);
-
-    const $ = cheerio.load(bodyHTML);
-    return $;
-}
+// See http://momentjs.com/docs/#/displaying/format/ for formatting
+const filenameDatetime = moment().format('MM-DD-YYYY--x');
 
 /**
  * Iterates over all cards in a set page,
@@ -54,8 +16,8 @@ async function retrieveHTML(url) {
  * @param {string} url
  */
 function collectSetPageCardData($) {
-    let rows = $('.cards ul > li');
     let cards = [];
+    let rows = $('.cards ul > li');
 
     const setName = $('h3')
         .text()
@@ -63,20 +25,20 @@ function collectSetPageCardData($) {
 
     const setCode = setCodeJSON[setName];
 
-    console.log(setCode);
+    console.log(setName, setCode);
 
-    rows.each(function(index, el) {
-        const name = $(this)
+    rows.each(function(index, element) {
+        const name = $(element)
             .find('a')
             .text()
             .trim();
 
-        const price1 = $(this)
+        const price1 = $(element)
             .children('span:nth-child(2)')
             .text()
             .trim();
 
-        const price2 = $(this)
+        const price2 = $(element)
             .children('span:nth-child(3)')
             .text()
             .trim();
@@ -105,7 +67,7 @@ function processURLs(urls) {
  * Finds all set links from a cheerio object,
  * and returns a list of complete urls
  */
-function findSetLinks($) {
+function collectSetLinks($) {
     let links = [];
 
     $('.sets.row')
@@ -117,16 +79,51 @@ function findSetLinks($) {
     return processURLs(links);
 }
 
-// retrieveHTML(BASE_URL + '/sets')
-//     .then($ => {
-//         console.log(findSetLinks($));
-//     })
-//     .catch(err => console.log(err));
+/**
+ * Launches puppeteer and scrapes sets, then navigates to each set
+ * page, scraping card data and returning a list array of cards
+ */
+async function run() {
+    let cardList = [];
 
-retrieveHTML(BASE_URL + '/sets/853')
-    .then($ => {
-        console.log(collectSetPageCardData($));
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.goto(BASE_URL + '/sets');
+
+    const bodyHTML = await page.evaluate(() => document.body.innerHTML);
+
+    // This is the list of all sets:
+    const $_sets = cheerio.load(bodyHTML);
+
+    const links = collectSetLinks($_sets);
+
+    fs.writeFileSync('./scrape/scraped_data/links.json', JSON.stringify(links));
+
+    // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
+    //     total: 50
+    // });
+
+    // Iterate over links, collecting card data:
+    for (let i = 0; i < links.length; i++) {
+        await page.goto(links[i]);
+        await page.waitFor(750); // Must wait for ::before and ::after pseudo elements to populate in UI
+        const cardHTML = await page.evaluate(() => document.body.innerHTML);
+        const $_cards = cheerio.load(cardHTML);
+        const cards = collectSetPageCardData($_cards);
+
+        cardList = cardList.concat(cards);
+        // collectBar.tick(50 / links.length);
+    }
+
+    browser.close();
+    return cardList;
+}
+
+// Initialize the scrape
+run()
+    .then(cards => {
+        fs.writeFileSync(`./scrape/scraped_data/${filenameDatetime}.json`, JSON.stringify(cards));
+        console.log('Scrape finished!');
     })
-    .catch(err => console.log(err));
-
-// console.log(CardCS.getSetCode('//cardimage.cardsphere.com/cards/Sets/UDS/Goblin Gardener.jpg'));
+    .catch(console.error);
