@@ -86,13 +86,32 @@ function collectSetLinks($) {
  * page, scraping card data and returning a list array of cards
  */
 async function run() {
+    // Attempt to bypass Puppeteer detection
+    const args = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-infobars',
+        '--window-position=0,0',
+        '--ignore-certifcate-errors',
+        '--ignore-certifcate-errors-spki-list',
+        '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
+    ];
+
+    // Puppeteer options
+    const options = {
+        args,
+        headless: true,
+        ignoreHTTPSErrors: true,
+        userDataDir: './scrape/tmp'
+    };
+
     // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
     //     total: 50
     // });
 
     let cardList = [];
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch(options);
     const page = await browser.newPage();
 
     await page.goto(BASE_URL + '/sets');
