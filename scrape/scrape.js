@@ -25,6 +25,8 @@ function collectSetPageCardData($) {
 
     const setCode = setCodeJSON[setName];
 
+    // TODO: Need error handling to catch 'undefined' values
+    // when scraping rather than relying on manual logging
     console.log(setName, setCode);
 
     rows.each(function(index, element) {
@@ -84,6 +86,10 @@ function collectSetLinks($) {
  * page, scraping card data and returning a list array of cards
  */
 async function run() {
+    // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
+    //     total: 50
+    // });
+
     let cardList = [];
 
     const browser = await puppeteer.launch();
@@ -98,11 +104,7 @@ async function run() {
 
     const links = collectSetLinks($_sets);
 
-    fs.writeFileSync('./scrape/scraped_data/links.json', JSON.stringify(links));
-
-    // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
-    //     total: 50
-    // });
+    // fs.writeFileSync('./scrape/scraped_data/links.json', JSON.stringify(links));
 
     // Iterate over links, collecting card data:
     for (let i = 0; i < links.length; i++) {
