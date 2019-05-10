@@ -4,6 +4,15 @@ const CardModel = require('../database/card').CardModel;
 
 /* POST json to seed database */
 router.post('/', function(req, res, next) {
+    // console.log(req.body);
+    // For each JSON entry, create a new cardModel and persist it
+
+    // Parse date from passed file
+    // TODO
+    // Map all data to new CardModel
+    // TODO
+    // Persist mapped data
+
     const card = new CardModel({
         name: 'Tester McKarnerson',
         setCode: 'LOL',
