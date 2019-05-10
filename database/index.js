@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CardSchema = require('./card');
 
 mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true });
 
@@ -8,8 +9,6 @@ db.once('open', function() {
     console.log("we're connected!");
 });
 
-// TODO
-// Create express server
-// Create monoose schema for scryfall essential data
-// On start, drop DB then fetch bulk data and bulk create
-// create cron job to automate process
+const CardModel = mongoose.model('Card', CardSchema);
+
+module.exports.CardModel = CardModel;
