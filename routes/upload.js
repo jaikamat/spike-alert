@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
-const db = require('mongoose');
-const CardModel = require('../database/index').CardModel;
+const CardModel = require('../database/card').CardModel;
 
 /* POST json to seed database */
 router.post('/', function(req, res, next) {
-    let card = new CardModel({
-        name: 'Tester McKarnerson'
+    const card = new CardModel({
+        name: 'Tester McKarnerson',
+        setCode: 'LOL',
+        priceHistory: []
     });
 
     card.save()
