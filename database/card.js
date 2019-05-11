@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const CardSchema = new mongoose.Schema({
+    _id: String,
     name: String,
     setCode: String,
     priceHistory: [
