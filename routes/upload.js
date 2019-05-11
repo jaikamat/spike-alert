@@ -46,46 +46,32 @@ router.post('/', upload.single('prices'), function(req, res, next) {
 
     // Parse date from passed file for use in dateHistory array
     const scrapeDateTime = getDateFromFilename(req.file.originalname);
-
-    console.log(scrapeDateTime);
-
-    // Promise.all the following below
-    // Return findOne.then(if not found, create)
+    console.log(`Parsing file ${req.file.originalname}`);
+    console.log(`Scrape DateTime: ${scrapeDateTime}`);
 
     let cardPromises = cardArray.map(el => {
-        let card = new CardModel(documentFormatFromCardData(el, scrapeDateTime));
+        // Create the document to be committed
+        let newCard = new CardModel(documentFormatFromCardData(el, scrapeDateTime));
 
-        return card
-            .save()
-            .then(console.log)
-            .catch(console.log);
+        return CardModel.findById(newCard._id).then(card => {
+            if (card) {
+                // Update prices
+                // TODO Check for identical dateTimes and do not commit if match
+                card.priceHistory.push(newCard.priceHistory[0]);
+                return card.save();
+            } else {
+                // No doc found, create
+                return newCard.save();
+            }
+        });
     });
 
-    Promise.all(cardPromises).then(() => console.log('Seeding successful!'));
-
-    // FIRST seed the DB with initial seed data and try to make IDs custom CHECK
-
-    // Iterate through all JSON
-    // Find card by ID (id = name + '__' + setCode with spaces replaced with '-')
-    // if card exists
-    // update priceHistory array
-    // if card not exists
-    // create card
-
-    // const card = new CardModel({
-    //     name: 'Tester McKarnerson',
-    //     setCode: 'LOL',
-    //     priceHistory: []
-    // });
-
-    // card.save()
-    //     .then(doc => {
-    //         console.log(doc);
-    //         console.log('card saved!');
-    //     })
-    //     .catch(console.log);
-
-    res.render('index', { title: 'Upload works!' });
+    Promise.all(cardPromises)
+        .then(() => {
+            console.log('Seeding successful!');
+            res.render('index', { title: 'Upload works!' });
+        })
+        .catch(console.log);
 });
 
 module.exports = router;
