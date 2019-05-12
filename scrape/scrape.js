@@ -25,6 +25,11 @@ function collectSetPageCardData($) {
 
     const setCode = setCodeJSON[setName];
 
+    // TODO create setName:Foil mapping JSON file
+    // if the set is all foil, designate it here
+    // if set is foil, foilprice is first read
+    // if the set is not foil, first is nonfoil and second is foil
+
     // TODO: Need error handling to catch 'undefined' values
     // when scraping rather than relying on manual logging
     console.log(setName, setCode);

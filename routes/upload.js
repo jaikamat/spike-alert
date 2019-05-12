@@ -20,23 +20,8 @@ function setUniqueId(card) {
     return removeSpaces;
 }
 
-function getUniqueId(id) {
-    // Deconstruct card _id here
-}
-
-function documentFormatFromCardData(card, date) {
-    return {
-        _id: setUniqueId(card),
-        name: card.name,
-        setCode: card.setCode,
-        priceHistory: [
-            {
-                price1: Number(card.price1.replace('$', '')),
-                price2: Number(card.price2.replace('$', '')),
-                date: new Date(date)
-            }
-        ]
-    };
+function filterPriceString(price) {
+    return Number(price.replace(/[$,]/g, ''));
 }
 
 /* POST json to seed database */
@@ -46,29 +31,39 @@ router.post('/', upload.single('prices'), function(req, res, next) {
 
     // Parse date from passed file for use in dateHistory array
     const scrapeDateTime = getDateFromFilename(req.file.originalname);
+
     console.log(`Parsing file ${req.file.originalname}`);
     console.log(`Scrape DateTime: ${scrapeDateTime}`);
 
-    let cardPromises = cardArray.map(el => {
-        // Create the document to be committed
-        let newCard = new CardModel(documentFormatFromCardData(el, scrapeDateTime));
-
-        return CardModel.findById(newCard._id).then(card => {
-            if (card) {
-                // Update prices
-                // TODO Check for identical dateTimes and do not commit if match
-                card.priceHistory.push(newCard.priceHistory[0]);
-                return card.save();
-            } else {
-                // No doc found, create
-                return newCard.save();
+    // See MongoDB docs, NOT Mongoose ODM docs for this syntax
+    let bulkOperations = cardArray.map(card => {
+        let upsertDoc = {
+            updateOne: {
+                filter: { _id: setUniqueId(card) },
+                update: {
+                    name: card.name,
+                    setCode: card.setCode,
+                    $push: {
+                        priceHistory: {
+                            price1: filterPriceString(card.price1),
+                            price2: filterPriceString(card.price2),
+                            date: new Date(scrapeDateTime)
+                        }
+                    }
+                },
+                upsert: true
             }
-        });
+        };
+
+        return upsertDoc;
     });
 
-    Promise.all(cardPromises)
-        .then(() => {
-            console.log('Seeding successful!');
+    // See https://stackoverflow.com/questions/39988848/trying-to-do-a-bulk-upsert-with-mongoose-whats-the-cleanest-way-to-do-this
+    // For syntax and non-documented quirks
+    // Important not to call CardModel.collection.bulkWrite() here
+    CardModel.bulkWrite(bulkOperations)
+        .then(result => {
+            console.log('Bulk Update/Upsert OK');
             res.render('index', { title: 'Upload works!' });
         })
         .catch(console.log);
