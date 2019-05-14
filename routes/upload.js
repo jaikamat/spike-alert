@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+const _ = require('lodash');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -70,9 +71,50 @@ router.post('/', upload.single('prices'), function(req, res, next) {
         .catch(console.log);
 });
 
-function createPriceTrends(priceDates) {
+function createPriceTrends(priceHistory) {
+    // just daily for now
+    // group by date (not time)
+    // grab last element in most recent array
+    // grab last element in day-before date array
+    // subtract the diff and divide by earliest price
+
+    let datesGrouped = _.groupBy(priceHistory, el => {
+        return moment(new Date(el.date)).startOf('day');
+    });
+
+    let orderedDatesUniq = _.keys(datesGrouped).sort(
+        (a, b) => moment(new Date(b)) - moment(new Date(a))
+    );
+
+    // Get the most recent day (today)
+    let day0 = orderedDatesUniq[0];
+    // Get the second most recent day (yesterday)
+    let day1 = orderedDatesUniq[1];
+
+    // Calculate the difference in prices
+    // Get last price in dayO - day1
+    let day0price1 = datesGrouped[day0].reverse()[0].price1;
+    // let day0price2 = datesGrouped[day0].reverse()[0].price2;
+
+    // TODO: A new card will not have previous priceHistory and thus the array length
+    // will be 1. Need to check for price history array lengths before doing comparison
+    if (datesGrouped[day1] === undefined) {
+        console.log(orderedDatesUniq);
+        console.log(datesGrouped, day1);
+    }
+
+    let day1price1 = datesGrouped[day1].reverse()[0].price1;
+    // let day1price2 = datesGrouped[day1].reverse()[0].price2;
+
+    // ((new - first) / first) * 100
+    let price1change = (((day0price1 - day1price1) / day1price1) * 100).toFixed(2);
+    // let price2change = (((day0price2 - day1price2) / day0price2) * 100).toFixed(2);
+
     return {
-        // daily: Number,
+        daily: {
+            price1: price1change
+            // price2: price2change
+        }
         // two_day: Number,
         // three_day: Number,
         // weekly: Number,
@@ -95,17 +137,15 @@ router.post('/update-prices', function(req, res, next) {
                 // weekly: if a date exists that is 7 days out, use that date, otherwise return null
                 // monthly: if a date exists that is 30-days out, use that date, otherwise return null
 
+                if (doc.name === 'Trinisphere' && doc.setCode === 'DST') {
+                    console.log(doc);
+                }
+
                 let op = {
                     updateOne: {
                         filter: { _id: doc._id },
                         update: {
-                            priceTrends: {
-                                // daily: Number,
-                                // two_day: Number,
-                                // three_day: Number,
-                                // weekly: Number,
-                                // monthly: Number
-                            }
+                            priceTrends: createPriceTrends(doc.priceHistory)
                         }
                     }
                 };
