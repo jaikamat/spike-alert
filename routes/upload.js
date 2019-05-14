@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -65,6 +66,60 @@ router.post('/', upload.single('prices'), function(req, res, next) {
         .then(result => {
             console.log('Bulk Update/Upsert OK');
             res.render('index', { title: 'Upload works!' });
+        })
+        .catch(console.log);
+});
+
+function createPriceTrends(priceDates) {
+    return {
+        // daily: Number,
+        // two_day: Number,
+        // three_day: Number,
+        // weekly: Number,
+        // monthly: Number
+    };
+}
+
+router.post('/update-prices', function(req, res, next) {
+    let bulkOperations = [];
+
+    CardModel.find({})
+        .then(docs => {
+            // Assemble bulkwrite operations
+            docs.forEach(doc => {
+                // Insert pricing / dateRange calculations here
+                // daily: take most recent date and calculate change from previous day
+                // ---> Note: there may be multiple scrapes daily. Need to iterate and find true last date
+                // two_day: same as daily but x2
+                // three_day: same as previous but x3
+                // weekly: if a date exists that is 7 days out, use that date, otherwise return null
+                // monthly: if a date exists that is 30-days out, use that date, otherwise return null
+
+                let op = {
+                    updateOne: {
+                        filter: { _id: doc._id },
+                        update: {
+                            priceTrends: {
+                                // daily: Number,
+                                // two_day: Number,
+                                // three_day: Number,
+                                // weekly: Number,
+                                // monthly: Number
+                            }
+                        }
+                    }
+                };
+
+                bulkOperations.push(op);
+            });
+        })
+        .then(() => {
+            return CardModel.bulkWrite(bulkOperations);
+        })
+        .then(result => {
+            console.log(result);
+            console.log('Pricing trends updated');
+            res.send('Pricing trends updated');
         })
         .catch(console.log);
 });

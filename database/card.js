@@ -10,7 +10,14 @@ const CardSchema = new mongoose.Schema({
             price2: Number,
             date: Date
         }
-    ]
+    ],
+    priceTrends: {
+        daily: Number,
+        two_day: Number,
+        three_day: Number,
+        weekly: Number,
+        monthly: Number
+    }
 });
 
 const CardModel = mongoose.model('Card', CardSchema);
