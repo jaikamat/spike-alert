@@ -90,19 +90,23 @@ function createPriceTrends(priceHistory) {
     // Get the most recent day (today)
     let day0 = orderedDatesUniq[0];
     // Get the second most recent day (yesterday)
-    let day1 = orderedDatesUniq[1];
+    let day1;
+    // If the card has a history, move on
+    if (orderedDatesUniq.length > 1) {
+        day1 = orderedDatesUniq[1];
+    } else {
+        // If the card is new and has no price history, there is no change
+        return {
+            daily: {
+                price1: 0
+            }
+        };
+    }
 
     // Calculate the difference in prices
     // Get last price in dayO - day1
     let day0price1 = datesGrouped[day0].reverse()[0].price1;
     // let day0price2 = datesGrouped[day0].reverse()[0].price2;
-
-    // TODO: A new card will not have previous priceHistory and thus the array length
-    // will be 1. Need to check for price history array lengths before doing comparison
-    if (datesGrouped[day1] === undefined) {
-        console.log(orderedDatesUniq);
-        console.log(datesGrouped, day1);
-    }
 
     let day1price1 = datesGrouped[day1].reverse()[0].price1;
     // let day1price2 = datesGrouped[day1].reverse()[0].price2;
