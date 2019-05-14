@@ -65,6 +65,7 @@ router.post('/', upload.single('prices'), function(req, res, next) {
     // Important not to call CardModel.collection.bulkWrite() here
     CardModel.bulkWrite(bulkOperations)
         .then(result => {
+            console.log(result);
             console.log('Bulk Update/Upsert OK');
             res.render('index', { title: 'Upload works!' });
         })
