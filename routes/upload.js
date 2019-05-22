@@ -125,19 +125,6 @@ router.post('/update-prices', function(req, res, next) {
         .then(docs => {
             // Assemble bulkwrite operations
             docs.forEach(doc => {
-                // Insert pricing / dateRange calculations here
-                // daily: take most recent date and calculate change from previous day
-                // ---> Note: there may be multiple scrapes daily. Need to iterate and find true last date
-                // two_day: same as daily but x2
-                // three_day: same as previous but x3
-                // weekly: if a date exists that is 7 days out, use that date, otherwise return null
-                // monthly: if a date exists that is 30-days out, use that date, otherwise return null
-
-                if (doc.name === 'Trinisphere' && doc.setCode === 'DST') {
-                    console.log(doc);
-                    console.log(createPriceTrends(doc.priceHistory));
-                }
-
                 let op = {
                     updateOne: {
                         filter: { _id: doc._id },
