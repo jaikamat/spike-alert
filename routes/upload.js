@@ -73,11 +73,10 @@ router.post('/', upload.single('prices'), function(req, res, next) {
 });
 
 function createPriceTrends(priceHistory) {
-    // just daily for now
-    // group by date (not time)
-    // grab last element in most recent array
-    // grab last element in day-before date array
-    // subtract the diff and divide by earliest price
+    // Check for array length corresponding to length of time
+    // if not long enough, it is unavailable (value must be null or just do not push property)
+    // ---> If 2-day or 3-day is available, but not weekly, we should not set values to 0, rather null
+    // if long enough, then add the changed value to the return object
 
     let datesGrouped = _.groupBy(priceHistory, el => {
         return moment(new Date(el.date)).startOf('day');
@@ -99,6 +98,7 @@ function createPriceTrends(priceHistory) {
         return {
             daily: {
                 price1: 0
+                // price2: 0
             }
         };
     }
@@ -113,7 +113,7 @@ function createPriceTrends(priceHistory) {
 
     // ((new - first) / first) * 100
     let price1change = (((day0price1 - day1price1) / day1price1) * 100).toFixed(2);
-    // let price2change = (((day0price2 - day1price2) / day0price2) * 100).toFixed(2);
+    // let price2change = (((day0price2 - day1price2) / day1price2) * 100).toFixed(2);
 
     return {
         daily: {
