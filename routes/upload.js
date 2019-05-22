@@ -73,58 +73,49 @@ router.post('/', upload.single('prices'), function(req, res, next) {
 });
 
 function createPriceTrends(priceHistory) {
-    // Check for array length corresponding to length of time
-    // if not long enough, it is unavailable (value must be null or just do not push property)
-    // ---> If 2-day or 3-day is available, but not weekly, we should not set values to 0, rather null
-    // if long enough, then add the changed value to the return object
-
+    // Group price history by single date (may be more than 1 scrape per day)
     let datesGrouped = _.groupBy(priceHistory, el => {
         return moment(new Date(el.date)).startOf('day');
     });
 
+    // Order the dates chronologically
     let orderedDatesUniq = _.keys(datesGrouped).sort(
         (a, b) => moment(new Date(b)) - moment(new Date(a))
     );
 
-    // Get the most recent day (today)
-    let day0 = orderedDatesUniq[0];
-    // Get the second most recent day (yesterday)
-    let day1;
-    // If the card has a history, move on
+    // Object recording daily change
+    let daily = {};
+
     if (orderedDatesUniq.length > 1) {
-        day1 = orderedDatesUniq[1];
+        let today = orderedDatesUniq[0]; // Retrieve the current day (today)
+        let yesterday = orderedDatesUniq[1]; // Retrieve yesterday for comparison
+
+        let todayPrice1 = datesGrouped[today].reverse()[0].price1; // Reteive the date array from group
+        let yesterdayPrice1 = datesGrouped[yesterday].reverse()[0].price1; // Retrieve yesterday array from group
+
+        let price1change = (((todayPrice1 - yesterdayPrice1) / yesterdayPrice1) * 100).toFixed(2);
+
+        daily.price1 = price1change;
+
+        // TODO Check for foil pricing (price2)
+        // If price2 is not zero, literally repeat the process
+        // Distill it into a re-usable function
     } else {
-        // If the card is new and has no price history, there is no change
-        return {
-            daily: {
-                price1: 0
-                // price2: 0
-            }
-        };
+        daily.price1 = null;
     }
 
-    // Calculate the difference in prices
-    // Get last price in dayO - day1
-    let day0price1 = datesGrouped[day0].reverse()[0].price1;
-    // let day0price2 = datesGrouped[day0].reverse()[0].price2;
+    return { daily: daily };
 
-    let day1price1 = datesGrouped[day1].reverse()[0].price1;
-    // let day1price2 = datesGrouped[day1].reverse()[0].price2;
-
-    // ((new - first) / first) * 100
-    let price1change = (((day0price1 - day1price1) / day1price1) * 100).toFixed(2);
-    // let price2change = (((day0price2 - day1price2) / day1price2) * 100).toFixed(2);
-
-    return {
-        daily: {
-            price1: price1change
-            // price2: price2change
-        }
-        // two_day: Number,
-        // three_day: Number,
-        // weekly: Number,
-        // monthly: Number
-    };
+    // return {
+    //     daily: {
+    //         price1: price1change
+    //         // price2: price2change
+    //     }
+    //     // two_day: Number,
+    //     // three_day: Number,
+    //     // weekly: Number,
+    //     // monthly: Number
+    // };
 }
 
 router.post('/update-prices', function(req, res, next) {
@@ -144,6 +135,7 @@ router.post('/update-prices', function(req, res, next) {
 
                 if (doc.name === 'Trinisphere' && doc.setCode === 'DST') {
                     console.log(doc);
+                    console.log(createPriceTrends(doc.priceHistory));
                 }
 
                 let op = {
