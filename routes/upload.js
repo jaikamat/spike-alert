@@ -40,7 +40,9 @@ function filterPriceString(price) {
     return Number(price.replace(/[$,]/g, ''));
 }
 
-/* POST json to seed database */
+/**
+ * Posts JSON reports scraped from CS to the database
+ */
 router.post('/', upload.single('prices'), function(req, res, next) {
     const string = req.file.buffer.toString(); // Convert the buffer to a string
     const cardArray = JSON.parse(string); // Convert the string to a list of cards
@@ -163,6 +165,9 @@ function createPriceTrends(priceHistory) {
     };
 }
 
+/**
+ * Updates card price trends
+ */
 router.post('/update-prices', function(req, res, next) {
     let bulkOperations = [];
 
