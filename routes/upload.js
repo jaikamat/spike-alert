@@ -7,6 +7,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const CardModel = require('../database/card').CardModel;
 
+/**
+ * Retrieves a date from custom-named filenames
+ * @param {string} filename
+ */
 function getDateFromFilename(filename) {
     const removeExtension = filename.split('.')[0];
     const unixDate = removeExtension.split('--')[1];
@@ -15,6 +19,12 @@ function getDateFromFilename(filename) {
     return new Date(unixDateNum);
 }
 
+/**
+ * Takes in a card object with setCode and name properties and
+ * creates a unique id for database use (all cards are unique by name
+ * and setCode)
+ * @param {Object} card
+ */
 function setUniqueId(card) {
     const idNoSpaces = card.name + '__' + card.setCode;
     const removeSpaces = idNoSpaces.replace(/ /g, '_');
@@ -22,6 +32,10 @@ function setUniqueId(card) {
     return removeSpaces;
 }
 
+/**
+ * Removes dollar signs and commas from price strings
+ * @param {number} price
+ */
 function filterPriceString(price) {
     return Number(price.replace(/[$,]/g, ''));
 }
@@ -72,10 +86,20 @@ router.post('/', upload.single('prices'), function(req, res, next) {
         .catch(console.log);
 });
 
+/**
+ * Takes two numbers and calculates their percent change
+ * @param {number} current
+ * @param {number} past
+ */
 function calculateChangeOverTime(current, past) {
     return (((current - past) / past) * 100).toFixed(2);
 }
 
+/**
+ * Takes in an array of priceHistory objects (have date and price info)
+ * and returns their price changes over various predefined time ranges
+ * @param {array} priceHistory
+ */
 function createPriceTrends(priceHistory) {
     // Group price history by single date (may be more than 1 scrape per day)
     let datesGrouped = _.groupBy(priceHistory, el => {
@@ -115,10 +139,6 @@ function createPriceTrends(priceHistory) {
 
         daily.price1 = price1change;
         if (price2change) daily.price2 = price2change;
-
-        // TODO Check for foil pricing (price2)
-        // If price2 is not zero, literally repeat the process
-        // Distill it into a re-usable function
     } else {
         daily.price1 = null;
     }
