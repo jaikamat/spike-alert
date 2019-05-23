@@ -108,6 +108,7 @@ function collatePriceTrends(datesGrouped, orderedDatesUniq, numDays) {
     // Object recording change
     let priceTrend = {};
 
+    // Check to see if the card was newly added - it may not have price history data
     if (orderedDatesUniq.length > numDays) {
         let recent = orderedDatesUniq[0]; // Retrieve the current day (recent)
         let past = orderedDatesUniq[numDays]; // Retrieve past for comparison
