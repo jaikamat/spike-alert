@@ -72,6 +72,10 @@ router.post('/', upload.single('prices'), function(req, res, next) {
         .catch(console.log);
 });
 
+function calculateChangeOverTime(current, past) {
+    return (((current - past) / past) * 100).toFixed(2);
+}
+
 function createPriceTrends(priceHistory) {
     // Group price history by single date (may be more than 1 scrape per day)
     let datesGrouped = _.groupBy(priceHistory, el => {
@@ -93,9 +97,24 @@ function createPriceTrends(priceHistory) {
         let todayPrice1 = datesGrouped[today].reverse()[0].price1; // Reteive the date array from group
         let yesterdayPrice1 = datesGrouped[yesterday].reverse()[0].price1; // Retrieve yesterday array from group
 
-        let price1change = (((todayPrice1 - yesterdayPrice1) / yesterdayPrice1) * 100).toFixed(2);
+        let todayPrice2;
+        let yesterdayPrice2;
+        let price2change;
+
+        if (
+            datesGrouped[today].reverse()[0].price2 &&
+            datesGrouped[yesterday].reverse()[0].price2
+        ) {
+            todayPrice2 = datesGrouped[today].reverse()[0].price2;
+            yesterdayPrice2 = datesGrouped[yesterday].reverse()[0].price2;
+
+            price2change = calculateChangeOverTime(todayPrice2, yesterdayPrice2);
+        }
+
+        let price1change = calculateChangeOverTime(todayPrice1, yesterdayPrice1);
 
         daily.price1 = price1change;
+        if (price2change) daily.price2 = price2change;
 
         // TODO Check for foil pricing (price2)
         // If price2 is not zero, literally repeat the process
