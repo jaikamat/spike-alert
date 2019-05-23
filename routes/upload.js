@@ -96,6 +96,49 @@ function calculateChangeOverTime(current, past) {
 }
 
 /**
+ * Creates an organized price trend object with nonfoil and foil prices
+ * (where applicable) over a specified number of days
+ * @param {array} datesGrouped
+ * @param {array} orderedDatesUniq
+ * @param {number} numDays
+ */
+function collatePriceTrends(datesGrouped, orderedDatesUniq, numDays) {
+    // Object recording change
+    let priceTrend = {};
+
+    if (orderedDatesUniq.length > numDays) {
+        let recent = orderedDatesUniq[0]; // Retrieve the current day (recent)
+        let past = orderedDatesUniq[numDays]; // Retrieve past for comparison
+
+        let recentPrice1 = datesGrouped[recent].reverse()[0].price1; // Reteive the date array from group
+        let pastPrice1 = datesGrouped[past].reverse()[0].price1; // Retrieve past array from group
+
+        let price1change = calculateChangeOverTime(recentPrice1, pastPrice1);
+
+        let recentPrice2;
+        let pastPrice2;
+        let price2change;
+
+        let price2exists =
+            datesGrouped[recent].reverse()[0].price2 && datesGrouped[past].reverse()[0].price2;
+
+        if (price2exists) {
+            recentPrice2 = datesGrouped[recent].reverse()[0].price2;
+            pastPrice2 = datesGrouped[past].reverse()[0].price2;
+
+            price2change = calculateChangeOverTime(recentPrice2, pastPrice2);
+        }
+
+        priceTrend.price1 = price1change;
+        if (price2change) priceTrend.price2 = price2change;
+    } else {
+        priceTrend.price1 = null;
+    }
+
+    return priceTrend;
+}
+
+/**
  * Takes in an array of priceHistory objects (have date and price info)
  * and returns their price changes over various predefined time ranges
  * @param {array} priceHistory
@@ -111,50 +154,13 @@ function createPriceTrends(priceHistory) {
         (a, b) => moment(new Date(b)) - moment(new Date(a))
     );
 
-    // Object recording daily change
-    let daily = {};
-
-    if (orderedDatesUniq.length > 1) {
-        let today = orderedDatesUniq[0]; // Retrieve the current day (today)
-        let yesterday = orderedDatesUniq[1]; // Retrieve yesterday for comparison
-
-        let todayPrice1 = datesGrouped[today].reverse()[0].price1; // Reteive the date array from group
-        let yesterdayPrice1 = datesGrouped[yesterday].reverse()[0].price1; // Retrieve yesterday array from group
-
-        let todayPrice2;
-        let yesterdayPrice2;
-        let price2change;
-
-        if (
-            datesGrouped[today].reverse()[0].price2 &&
-            datesGrouped[yesterday].reverse()[0].price2
-        ) {
-            todayPrice2 = datesGrouped[today].reverse()[0].price2;
-            yesterdayPrice2 = datesGrouped[yesterday].reverse()[0].price2;
-
-            price2change = calculateChangeOverTime(todayPrice2, yesterdayPrice2);
-        }
-
-        let price1change = calculateChangeOverTime(todayPrice1, yesterdayPrice1);
-
-        daily.price1 = price1change;
-        if (price2change) daily.price2 = price2change;
-    } else {
-        daily.price1 = null;
-    }
-
-    return { daily: daily };
-
-    // return {
-    //     daily: {
-    //         price1: price1change
-    //         // price2: price2change
-    //     }
-    //     // two_day: Number,
-    //     // three_day: Number,
-    //     // weekly: Number,
-    //     // monthly: Number
-    // };
+    return {
+        daily: collatePriceTrends(datesGrouped, orderedDatesUniq, 1),
+        two_day: collatePriceTrends(datesGrouped, orderedDatesUniq, 2),
+        three_day: collatePriceTrends(datesGrouped, orderedDatesUniq, 3),
+        weekly: collatePriceTrends(datesGrouped, orderedDatesUniq, 7),
+        monthly: collatePriceTrends(datesGrouped, orderedDatesUniq, 30)
+    };
 }
 
 router.post('/update-prices', function(req, res, next) {

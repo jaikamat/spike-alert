@@ -12,11 +12,11 @@ const CardSchema = new mongoose.Schema({
         }
     ],
     priceTrends: {
-        daily: { price1: Number, price2: Number }
-        // two_day: Number,
-        // three_day: Number,
-        // weekly: Number,
-        // monthly: Number
+        daily: { price1: Number, price2: Number },
+        two_day: { price1: Number, price2: Number },
+        three_day: { price1: Number, price2: Number },
+        weekly: { price1: Number, price2: Number },
+        monthly: { price1: Number, price2: Number }
     }
 });
 
