@@ -55,7 +55,7 @@ router.post('/', upload.single('prices'), function(req, res, next) {
 
     // See MongoDB docs, NOT Mongoose ODM docs for this syntax
     let bulkOperations = cardArray.map(card => {
-        let upsertDoc = {
+        return {
             updateOne: {
                 filter: { _id: setUniqueId(card) },
                 update: {
@@ -72,8 +72,6 @@ router.post('/', upload.single('prices'), function(req, res, next) {
                 upsert: true
             }
         };
-
-        return upsertDoc;
     });
 
     // See https://stackoverflow.com/questions/39988848/trying-to-do-a-bulk-upsert-with-mongoose-whats-the-cleanest-way-to-do-this
@@ -107,6 +105,10 @@ function calculateChangeOverTime(current, past) {
 function collatePriceTrends(datesGrouped, orderedDatesUniq, numDays) {
     // Object recording change
     let priceTrend = {};
+
+    // TODO: Logic here might be wrong. Getting day's change should only show changes from scrapes
+    // from the day, not from the previous day.
+    // If there has only been one daily scrape then the daily change is 0%
 
     // Check to see if the card was newly added - it may not have price history data
     if (orderedDatesUniq.length > numDays) {
