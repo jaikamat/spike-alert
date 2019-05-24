@@ -1,31 +1,38 @@
-// get list of filenames
-// loop
-// each file => upload to server, continue
-
 const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
 
-// Get filenames to iterate over
+// Get filenames
 let filenames = fs.readdirSync('./scrape/scraped_data');
 
-// Create new form
-const form = new FormData();
-
-// Append the 'prices' property for read by route
-form.append('prices', fs.createReadStream(`./scrape/scraped_data/${filenames[0]}`));
-
-// Wrap post request in async function to allow synchronous iteration
+/**
+ * Wraps POST request in async function to allow synchronous iteration
+ * @param {object} dataOpts
+ */
 async function postCards(dataOpts) {
     const res = await axios(dataOpts);
     return res;
 }
 
-let data = {
-    method: 'POST',
-    url: 'http://localhost:1337/upload',
-    data: form,
-    headers: { ...form.getHeaders() }
-};
+/**
+ * Iterates over each scraped filename, creating formdata and uploading it to the db via POST.
+ */
+(async function upload() {
+    for (let i = 0; i < filenames.length; i++) {
+        let form = new FormData();
+        form.append('prices', fs.createReadStream(`./scrape/scraped_data/${filenames[i]}`));
 
-postCards(data).then(console.log);
+        let data = {
+            method: 'POST',
+            url: 'http://localhost:1337/upload',
+            data: form,
+            headers: { ...form.getHeaders() }
+        };
+
+        await postCards(data)
+            .then(() => {
+                console.log(`${filenames[i]} uploaded`);
+            })
+            .catch(console.log);
+    }
+})();
