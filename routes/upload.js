@@ -169,34 +169,49 @@ function createPriceTrends(priceHistory) {
 }
 
 /**
+ * Performs a bulk update of all card pricing trend data by using chunking
+ * (to prevent querying the whole databse and using up all available V8 memory)
+ */
+async function findAndUpdatePriceTrends() {
+    let bulkOps = [];
+    let count = 0;
+    let docs;
+
+    while (true) {
+        docs = await CardModel.find({})
+            .skip(count * 500)
+            .limit(500);
+
+        if (docs.length === 0) break;
+
+        docs.forEach(doc => {
+            let op = {
+                updateOne: {
+                    filter: { _id: doc._id },
+                    update: {
+                        priceTrends: createPriceTrends(doc.priceHistory)
+                    }
+                }
+            };
+
+            bulkOps.push(op);
+        });
+
+        await CardModel.bulkWrite(bulkOps);
+
+        bulkOps = [];
+        count += 1;
+    }
+    return 'Pricing update complete!';
+}
+
+/**
  * Updates card price trends
  */
 router.post('/update-prices', function(req, res, next) {
-    let bulkOperations = [];
-
-    CardModel.find({})
-        .then(docs => {
-            // Assemble bulkwrite operations
-            docs.forEach(doc => {
-                let op = {
-                    updateOne: {
-                        filter: { _id: doc._id },
-                        update: {
-                            priceTrends: createPriceTrends(doc.priceHistory)
-                        }
-                    }
-                };
-
-                bulkOperations.push(op);
-            });
-        })
-        .then(() => {
-            return CardModel.bulkWrite(bulkOperations);
-        })
-        .then(result => {
-            console.log(result);
-            console.log('Pricing trends updated');
-            res.send('Pricing trends updated');
+    findAndUpdatePriceTrends()
+        .then(msg => {
+            res.send(msg);
         })
         .catch(console.log);
 });
