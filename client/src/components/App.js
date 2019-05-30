@@ -5,7 +5,7 @@ import axios from 'axios';
 class App extends React.Component {
     onSearchSubmit = async arg => {
         const response = await axios.get('http://localhost:1337/search', {
-            crossDomain: true
+            params: { name: arg }
         });
         console.log(response);
     };
