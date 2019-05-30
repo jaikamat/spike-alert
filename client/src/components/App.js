@@ -1,10 +1,13 @@
 import React from 'react';
 import SearchBar from './SearchBar';
+import axios from 'axios';
 
 class App extends React.Component {
-    onSearchSubmit = arg => {
-        // Make GET request here
-        console.log(`${arg} logged to console`);
+    onSearchSubmit = async arg => {
+        const response = await axios.get('http://localhost:1337/search', {
+            crossDomain: true
+        });
+        console.log(response);
     };
 
     render() {
