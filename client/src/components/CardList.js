@@ -1,8 +1,21 @@
 import React from 'react';
+import CardDisplay from './CardDisplay';
 
 const CardList = props => {
     const cards = props.cards.map((item, key) => {
-        return <div class="ui segment">Hello</div>;
+        let currentPrice = item.priceHistory[item.priceHistory.length - 1];
+
+        return (
+            <CardDisplay
+                key={item._id}
+                name={item.name}
+                setCode={item.setCode}
+                price1={currentPrice.price1}
+                price2={currentPrice.price2}
+                priceTrends={item.priceTrends}
+                priceHistory={item.priceHistory}
+            />
+        );
     });
 
     return cards;
