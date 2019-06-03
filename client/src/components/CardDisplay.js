@@ -3,12 +3,23 @@ import PriceGraph from './PriceGraph';
 import setCodes from '../utils/setcodes.json';
 
 const CardDisplay = props => {
+    let foilPrice;
+
+    if (props.price2 !== 0) {
+        foilPrice = <div>${props.price2.toFixed(2)}</div>;
+    } else {
+        foilPrice = null;
+    }
+
     return (
         <div className="ui segment">
-            <div>{props.name}</div>
+            <div>
+                <h3>{props.name}</h3>
+            </div>
             <div>{setCodes[props.setCode]}</div>
             <div>${props.price1.toFixed(2)}</div>
-            <div>${props.price2.toFixed(2)}</div>
+            {foilPrice}
+            <div>{props.priceTrends.weekly.price1}%</div>
             <div>
                 <PriceGraph id={props.id} priceHistory={props.priceHistory} />
             </div>
