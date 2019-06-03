@@ -2,6 +2,8 @@ import React from 'react';
 import './PriceGraph.css';
 import * as d3 from 'd3';
 
+// Document IDs include card names, which may contain punctuation that may not be valid
+// CSS selectors - we use this function to hash them for DOM selection
 const hashCode = string => {
     let hash = 0;
     if (string.length === 0) return hash;
@@ -35,6 +37,7 @@ class PriceGraph extends React.Component {
             .x(d => x(d.date))
             .y(d => y(d.price1));
 
+        // Append the SVG element to the DOM and set its width and height
         let svg = d3
             .select(`#chart-${hashCode(this.props.id)}`)
             .append('svg')
@@ -43,23 +46,28 @@ class PriceGraph extends React.Component {
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
+        // Format the data
         data.forEach(d => {
             d.date = strictIsoParse(d.date);
             d.price1 = +d.price1;
         });
 
+        // Scale the range of the data
         x.domain(d3.extent(data, d => d.date));
         y.domain([0, d3.max(data, d => d.price1)]);
 
+        // Add the path
         svg.append('path')
             .data([data])
             .attr('class', 'line')
             .attr('d', valueLine);
 
+        // Add the X axis
         svg.append('g')
             .attr('transform', `translate(0,${height})`)
             .call(d3.axisBottom(x));
 
+        // Add the Y axis
         svg.append('g').call(d3.axisLeft(y));
     };
 
