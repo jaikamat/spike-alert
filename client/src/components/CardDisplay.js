@@ -11,6 +11,14 @@ const CardDisplay = props => {
         foilPrice = null;
     }
 
+    let changeIcon;
+
+    if (props.priceTrends.weekly.price1 > 0) {
+        changeIcon = <i className="arrow alternate circle up icon" />;
+    } else {
+        changeIcon = <i className="arrow alternate circle down icon" />;
+    }
+
     return (
         <div className="ui segment">
             <div>
@@ -19,7 +27,10 @@ const CardDisplay = props => {
             <div>{setCodes[props.setCode]}</div>
             <div>${props.price1.toFixed(2)}</div>
             {foilPrice}
-            <div>{props.priceTrends.weekly.price1}%</div>
+            <div>
+                {changeIcon}
+                {props.priceTrends.weekly.price1}%
+            </div>
             <div>
                 <PriceGraph id={props.id} priceHistory={props.priceHistory} />
             </div>
