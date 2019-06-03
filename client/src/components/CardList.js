@@ -8,6 +8,7 @@ const CardList = props => {
         return (
             <CardDisplay
                 key={item._id}
+                id={item._id}
                 name={item.name}
                 setCode={item.setCode}
                 price1={currentPrice.price1}

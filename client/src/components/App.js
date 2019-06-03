@@ -17,7 +17,6 @@ class App extends React.Component {
         let cards;
 
         if (this.state.cards.length > 0) {
-            console.log('got here');
             cards = <CardList cards={this.state.cards} />;
         }
 

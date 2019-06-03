@@ -9,7 +9,7 @@ const CardDisplay = props => {
             <div>${props.price1.toFixed(2)}</div>
             <div>${props.price2.toFixed(2)}</div>
             <div>
-                <PriceGraph priceHistory={props.priceHistory} />
+                <PriceGraph id={props.id} priceHistory={props.priceHistory} />
             </div>
         </div>
     );

@@ -1,7 +1,77 @@
 import React from 'react';
+import './PriceGraph.css';
+import * as d3 from 'd3';
 
-const PriceGraph = () => {
-    return <div>Graph goes here!</div>;
+const hashCode = string => {
+    let hash = 0;
+    if (string.length === 0) return hash;
+
+    for (let i = 0; i < string.length; i++) {
+        let char = string.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
+
+    return hash;
 };
+
+class PriceGraph extends React.Component {
+    drawChart = () => {
+        const data = this.props.priceHistory;
+        const strictIsoParse = d3.utcParse('%Y-%m-%dT%H:%M:%S.%LZ');
+
+        // Set canvas/graph dimensions
+        let margin = { top: 30, right: 20, bottom: 30, left: 50 };
+        let width = 600 - margin.left - margin.right;
+        let height = 270 - margin.top - margin.bottom;
+
+        // Set the ranges
+        let x = d3.scaleTime().range([0, width]);
+        let y = d3.scaleLinear().range([height, 0]);
+
+        // Define the line
+        let valueLine = d3
+            .line()
+            .x(d => x(d.date))
+            .y(d => y(d.price1));
+
+        let svg = d3
+            .select(`#chart-${hashCode(this.props.id)}`)
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        data.forEach(d => {
+            d.date = strictIsoParse(d.date);
+            d.price1 = +d.price1;
+        });
+
+        x.domain(d3.extent(data, d => d.date));
+        y.domain([0, d3.max(data, d => d.price1)]);
+
+        svg.append('path')
+            .data([data])
+            .attr('class', 'line')
+            .attr('d', valueLine);
+
+        svg.append('g')
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+        svg.append('g').call(d3.axisLeft(y));
+    };
+
+    componentDidMount() {
+        this.drawChart();
+    }
+
+    render() {
+        const idKey = `chart-${hashCode(this.props.id)}`;
+
+        return <div id={idKey} className="PriceGraph" />;
+    }
+}
 
 export default PriceGraph;
