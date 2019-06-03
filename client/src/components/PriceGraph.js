@@ -35,7 +35,8 @@ class PriceGraph extends React.Component {
         let valueLine = d3
             .line()
             .x(d => x(d.date))
-            .y(d => y(d.price1));
+            .y(d => y(d.price1))
+            .curve(d3.curveBasis);
 
         // Append the SVG element to the DOM and set its width and height
         let svg = d3
