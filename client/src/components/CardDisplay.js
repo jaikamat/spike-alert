@@ -4,7 +4,7 @@ import PriceGraph from './PriceGraph';
 const CardDisplay = props => {
     let foilPrice;
 
-    if (props.price2 !== 0) {
+    if (props.price2) {
         foilPrice = <div>${props.price2.toFixed(2)}</div>;
     } else {
         foilPrice = null;

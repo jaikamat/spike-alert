@@ -5,6 +5,7 @@ const _ = require('lodash');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const setcodeMapper = require('../utils/setCodes.json');
 const CardModel = require('../database/card').CardModel;
 
 /**
@@ -37,6 +38,7 @@ function setUniqueId(card) {
  * @param {number} price
  */
 function filterPriceString(price) {
+    if (price === '') return null;
     return Number(price.replace(/[$,]/g, ''));
 }
 
@@ -54,6 +56,7 @@ router.post('/', upload.single('prices'), function(req, res, next) {
     console.log(`Scrape DateTime: ${scrapeDateTime}`);
 
     // See MongoDB docs, NOT Mongoose ODM docs for this syntax
+    //TODO: if the price is $0.00 then it doesn't exist and needs to be null
     let bulkOperations = cardArray.map(card => {
         return {
             updateOne: {
