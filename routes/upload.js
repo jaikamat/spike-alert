@@ -5,7 +5,7 @@ const _ = require('lodash');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const setcodeMapper = require('../utils/setCodes.json');
+const setCodeMapper = require('../utils/setCodes.json');
 const CardModel = require('../database/card').CardModel;
 
 /**
@@ -63,6 +63,7 @@ router.post('/', upload.single('prices'), function(req, res, next) {
                 filter: { _id: setUniqueId(card) },
                 update: {
                     name: card.name,
+                    setName: setCodeMapper[card.setCode],
                     setCode: card.setCode,
                     $push: {
                         priceHistory: {

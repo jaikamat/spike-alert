@@ -11,6 +11,7 @@ const CardList = props => {
                 id={item._id}
                 name={item.name}
                 setCode={item.setCode}
+                setName={item.setName}
                 price1={currentPrice.price1}
                 price2={currentPrice.price2}
                 priceTrends={item.priceTrends}

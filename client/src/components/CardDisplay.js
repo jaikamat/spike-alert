@@ -4,32 +4,21 @@ import PriceGraph from './PriceGraph';
 const CardDisplay = props => {
     let foilPrice;
 
-    if (props.price2) {
-        foilPrice = <div>${props.price2.toFixed(2)}</div>;
-    } else {
-        foilPrice = null;
-    }
+    // If price2 exists in addition to price1, foil printing exists
+    if (props.price2) foilPrice = <div>${props.price2.toFixed(2)}</div>;
+    else foilPrice = null;
 
-    let changeIcon;
-
-    if (props.priceTrends.weekly.price1 > 0) {
-        changeIcon = <i className="arrow alternate circle up icon" />;
-    } else {
-        changeIcon = <i className="arrow alternate circle down icon" />;
-    }
+    let changePrice = props.priceTrends.weekly.price1;
 
     return (
         <div className="ui segment">
             <div>
                 <h3>{props.name}</h3>
             </div>
-            <div>{props.setCode}</div>
+            <div>{props.setName}</div>
             <div>${props.price1.toFixed(2)}</div>
             {foilPrice}
-            <div>
-                {changeIcon}
-                {props.priceTrends.weekly.price1}%
-            </div>
+            <div>{changePrice > 0 ? '+' + changePrice : changePrice}%</div>
             <div>
                 <PriceGraph id={props.id} priceHistory={props.priceHistory} />
             </div>

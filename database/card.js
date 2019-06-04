@@ -4,6 +4,7 @@ const CardSchema = new mongoose.Schema({
     _id: String,
     name: String,
     setCode: String,
+    setName: String,
     priceHistory: [
         {
             price1: Number,
