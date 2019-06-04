@@ -23,7 +23,7 @@ class App extends React.Component {
         return (
             <div className="ui container" style={{ marginTop: '10px' }}>
                 <SearchBar userSearch={this.onSearchSubmit} />
-                <div>{cards}</div>
+                {cards}
             </div>
         );
     }

@@ -1,6 +1,5 @@
 import React from 'react';
 import PriceGraph from './PriceGraph';
-import setCodes from '../utils/setcodes.json';
 
 const CardDisplay = props => {
     let foilPrice;
@@ -24,7 +23,7 @@ const CardDisplay = props => {
             <div>
                 <h3>{props.name}</h3>
             </div>
-            <div>{setCodes[props.setCode]}</div>
+            <div>{props.setCode}</div>
             <div>${props.price1.toFixed(2)}</div>
             {foilPrice}
             <div>
