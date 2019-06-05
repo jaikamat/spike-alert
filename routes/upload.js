@@ -6,6 +6,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const setCodeMapper = require('../utils/setCodes.json');
+const hash = require('../utils/hash').hash;
 const CardModel = require('../database/card').CardModel;
 
 /**
@@ -60,7 +61,7 @@ router.post('/', upload.single('prices'), function(req, res, next) {
     let bulkOperations = cardArray.map(card => {
         return {
             updateOne: {
-                filter: { _id: setUniqueId(card) },
+                filter: { _id: hash(card.name + card.setCode) },
                 update: {
                     name: card.name,
                     setName: setCodeMapper[card.setCode],
