@@ -22,19 +22,6 @@ function getDateFromFilename(filename) {
 }
 
 /**
- * Takes in a card object with setCode and name properties and
- * creates a unique id for database use (all cards are unique by name
- * and setCode)
- * @param {Object} card
- */
-function setUniqueId(card) {
-    const idNoSpaces = card.name + '__' + card.setCode;
-    const removeSpaces = idNoSpaces.replace(/ /g, '_');
-
-    return removeSpaces;
-}
-
-/**
  * Removes dollar signs and commas from price strings
  * @param {number} price
  */
