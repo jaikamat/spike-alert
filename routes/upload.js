@@ -1,11 +1,10 @@
 const express = require('express');
-const multer = require('multer');
 const router = express.Router();
+const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const setCodeMapper = require('../utils/setCodes.json');
-const hash = require('../utils/hash').hash;
 const updatePriceTrends = require('../database/cardController').updatePriceTrends;
+const persistCards = require('../database/cardController').persistCards;
 
 /**
  * Retrieves a date from custom-named filenames
@@ -17,15 +16,6 @@ function getDateFromFilename(filename) {
     const unixDateNum = parseInt(unixDate);
 
     return new Date(unixDateNum);
-}
-
-/**
- * Removes dollar signs and commas from price strings
- * @param {number} price
- */
-function filterPriceString(price) {
-    if (price === '') return null;
-    return Number(price.replace(/[$,]/g, ''));
 }
 
 /**
@@ -41,36 +31,9 @@ router.post('/', upload.single('prices'), function(req, res, next) {
     console.log(`Parsing file ${req.file.originalname}`);
     console.log(`Scrape DateTime: ${scrapeDateTime}`);
 
-    // See MongoDB docs, NOT Mongoose ODM docs for this syntax
-    //TODO: if the price is $0.00 then it doesn't exist and needs to be null
-    let bulkOperations = cardArray.map(card => {
-        return {
-            updateOne: {
-                filter: { _id: hash(card.name + card.setCode) },
-                update: {
-                    name: card.name,
-                    setName: setCodeMapper[card.setCode],
-                    setCode: card.setCode,
-                    $push: {
-                        priceHistory: {
-                            price1: filterPriceString(card.price1),
-                            price2: filterPriceString(card.price2),
-                            date: new Date(scrapeDateTime)
-                        }
-                    }
-                },
-                upsert: true
-            }
-        };
-    });
-
-    // See https://stackoverflow.com/questions/39988848/trying-to-do-a-bulk-upsert-with-mongoose-whats-the-cleanest-way-to-do-this
-    // For syntax and non-documented quirks
-    // Important not to call CardModel.collection.bulkWrite() here
-    CardModel.bulkWrite(bulkOperations)
-        .then(result => {
-            console.log(result);
-            console.log('Bulk Update/Upsert OK');
+    persistCards(cardArray, scrapeDateTime)
+        .then(bulkWriteInfo => {
+            console.log(bulkWriteInfo);
             res.render('index', { title: 'Upload works!' });
         })
         .catch(console.log);
