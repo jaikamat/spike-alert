@@ -17,7 +17,9 @@ const CardSchema = new mongoose.Schema({
         two_day: { price1: Number, price2: Number },
         three_day: { price1: Number, price2: Number },
         weekly: { price1: Number, price2: Number },
-        monthly: { price1: Number, price2: Number }
+        monthly: { price1: Number, price2: Number },
+        yearly: { price1: Number, price2: Number },
+        all_time: { price1: Number, price2: Number }
     }
 });
 

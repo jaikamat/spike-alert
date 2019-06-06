@@ -1,13 +1,11 @@
 const express = require('express');
-const router = express.Router();
-const moment = require('moment');
-const _ = require('lodash');
 const multer = require('multer');
+const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const setCodeMapper = require('../utils/setCodes.json');
 const hash = require('../utils/hash').hash;
-const CardModel = require('../database/card').CardModel;
+const updatePriceTrends = require('../database/cardController').updatePriceTrends;
 
 /**
  * Retrieves a date from custom-named filenames
@@ -79,129 +77,10 @@ router.post('/', upload.single('prices'), function(req, res, next) {
 });
 
 /**
- * Takes two numbers and calculates their percent change
- * @param {number} current
- * @param {number} past
- */
-function calculateChangeOverTime(current, past) {
-    return (((current - past) / past) * 100).toFixed(2);
-}
-
-/**
- * Creates an organized price trend object with nonfoil and foil prices
- * (where applicable) over a specified number of days
- * @param {array} datesGrouped
- * @param {array} orderedDatesUniq
- * @param {number} numDays
- */
-function collatePriceTrends(datesGrouped, orderedDatesUniq, numDays) {
-    // Object recording change
-    let priceTrend = {};
-
-    // TODO: Logic here might be wrong. Getting day's change should only show changes from scrapes
-    // from the day, not from the previous day.
-    // If there has only been one daily scrape then the daily change is 0%
-
-    // Check to see if the card was newly added - it may not have price history data
-    if (orderedDatesUniq.length > numDays) {
-        let recent = orderedDatesUniq[0]; // Retrieve the current day (recent)
-        let past = orderedDatesUniq[numDays]; // Retrieve past for comparison
-
-        let recentPrice1 = datesGrouped[recent].reverse()[0].price1; // Reteive the date array from group
-        let pastPrice1 = datesGrouped[past].reverse()[0].price1; // Retrieve past array from group
-
-        let price1change = calculateChangeOverTime(recentPrice1, pastPrice1);
-
-        let recentPrice2;
-        let pastPrice2;
-        let price2change;
-
-        let price2exists =
-            datesGrouped[recent].reverse()[0].price2 && datesGrouped[past].reverse()[0].price2;
-
-        if (price2exists) {
-            recentPrice2 = datesGrouped[recent].reverse()[0].price2;
-            pastPrice2 = datesGrouped[past].reverse()[0].price2;
-
-            price2change = calculateChangeOverTime(recentPrice2, pastPrice2);
-        }
-
-        priceTrend.price1 = price1change;
-        if (price2change) priceTrend.price2 = price2change;
-    } else {
-        priceTrend.price1 = null;
-    }
-
-    return priceTrend;
-}
-
-/**
- * Takes in an array of priceHistory objects (have date and price info)
- * and returns their price changes over various predefined time ranges
- * @param {array} priceHistory
- */
-function createPriceTrends(priceHistory) {
-    // Group price history by single date (may be more than 1 scrape per day)
-    let datesGrouped = _.groupBy(priceHistory, el => {
-        return moment(new Date(el.date)).startOf('day');
-    });
-
-    // Order the dates chronologically
-    let orderedDatesUniq = _.keys(datesGrouped).sort(
-        (a, b) => moment(new Date(b)) - moment(new Date(a))
-    );
-
-    return {
-        daily: collatePriceTrends(datesGrouped, orderedDatesUniq, 1),
-        two_day: collatePriceTrends(datesGrouped, orderedDatesUniq, 2),
-        three_day: collatePriceTrends(datesGrouped, orderedDatesUniq, 3),
-        weekly: collatePriceTrends(datesGrouped, orderedDatesUniq, 7),
-        monthly: collatePriceTrends(datesGrouped, orderedDatesUniq, 30)
-    };
-}
-
-/**
- * Performs a bulk update of all card pricing trend data by using chunking
- * (to prevent querying the whole databse and using up all available V8 memory)
- */
-async function findAndUpdatePriceTrends() {
-    let bulkOps = [];
-    let count = 0;
-    let docs;
-
-    while (true) {
-        docs = await CardModel.find({})
-            .skip(count * 500)
-            .limit(500);
-
-        if (docs.length === 0) break;
-
-        docs.forEach(doc => {
-            let op = {
-                updateOne: {
-                    filter: { _id: doc._id },
-                    update: {
-                        priceTrends: createPriceTrends(doc.priceHistory)
-                    }
-                }
-            };
-
-            bulkOps.push(op);
-        });
-
-        await CardModel.bulkWrite(bulkOps);
-
-        bulkOps = [];
-        count += 1;
-    }
-    return 'Pricing update complete!';
-}
-
-/**
  * Updates card price trends
  */
 router.post('/update-prices', function(req, res, next) {
-    findAndUpdatePriceTrends()
+    updatePriceTrends()
         .then(msg => {
             res.send(msg);
         })
