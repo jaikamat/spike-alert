@@ -1,70 +1,137 @@
 import React from 'react';
-import './PriceGraph.css';
-import * as d3 from 'd3';
+import Chart from 'chart.js';
+import classes from './PriceGraph.module.css';
+import moment from 'moment';
 
 class PriceGraph extends React.Component {
-    drawChart = () => {
-        const data = this.props.priceHistory;
-        const strictIsoParse = d3.utcParse('%Y-%m-%dT%H:%M:%S.%LZ');
-
-        // Set canvas/graph dimensions
-        let margin = { top: 30, right: 20, bottom: 30, left: 50 };
-        let width = 600 - margin.left - margin.right;
-        let height = 270 - margin.top - margin.bottom;
-
-        // Set the ranges
-        let x = d3.scaleTime().range([0, width]);
-        let y = d3.scaleLinear().range([height, 0]);
-
-        // Define the line
-        let valueLine = d3
-            .line()
-            .x(d => x(d.date))
-            .y(d => y(d.price1))
-            .curve(d3.curveBasis);
-
-        // Append the SVG element to the DOM and set its width and height
-        let svg = d3
-            .select(`#chart-${this.props.id}`)
-            .append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
-
-        // Format the data
-        data.forEach(d => {
-            d.date = strictIsoParse(d.date);
-            d.price1 = +d.price1;
-        });
-
-        // Scale the range of the data
-        x.domain(d3.extent(data, d => d.date));
-        y.domain([0, d3.max(data, d => d.price1)]);
-
-        // Add the path
-        svg.append('path')
-            .data([data])
-            .attr('class', 'line')
-            .attr('d', valueLine);
-
-        // Add the X axis
-        svg.append('g')
-            .attr('transform', `translate(0,${height})`)
-            .call(d3.axisBottom(x));
-
-        // Add the Y axis
-        svg.append('g').call(d3.axisLeft(y));
-    };
+    state = {};
+    chartRef = React.createRef();
 
     componentDidMount() {
-        this.drawChart();
+        // Maps priceHistory to a ChartJS-usable array
+        const price1Data = this.props.priceHistory.map(card => {
+            return {
+                x: new moment(new Date(card.date)),
+                y: card.price1
+            };
+        });
+
+        const price2Data = this.props.priceHistory.map(card => {
+            return {
+                x: new moment(new Date(card.date)),
+                y: card.price2
+            };
+        });
+
+        const myChartRef = this.chartRef.current.getContext('2d');
+
+        const width = window.innerWidth || document.body.clientWidth;
+        let gradientStroke1 = myChartRef.createLinearGradient(0, 0, width, 0);
+        let gradientStroke2 = myChartRef.createLinearGradient(0, 0, width, 0);
+        let backgroundGradient1 = myChartRef.createLinearGradient(0, 0, width, 0);
+        let backgroundGradient2 = myChartRef.createLinearGradient(0, 0, width, 0);
+
+        const firstColor1 = '#7C4DFF';
+        const secondColor1 = '#448AFF';
+        const thirdColor1 = '#00BCD4';
+        const fourthColor1 = '#1DE9B6';
+
+        const firstColor2 = '#F44336';
+        const secondColor2 = '#F50057';
+        const thirdColor2 = '#FF4081';
+        const fourthColor2 = '#FF9100';
+
+        gradientStroke1.addColorStop(0, firstColor1);
+        gradientStroke1.addColorStop(0.3, secondColor1);
+        gradientStroke1.addColorStop(0.6, thirdColor1);
+        gradientStroke1.addColorStop(1, fourthColor1);
+
+        gradientStroke2.addColorStop(0, firstColor2);
+        gradientStroke2.addColorStop(0.3, secondColor2);
+        gradientStroke2.addColorStop(0.6, thirdColor2);
+        gradientStroke2.addColorStop(1, fourthColor2);
+
+        backgroundGradient1.addColorStop(0, 'rgba(124, 77, 255, 0.5)');
+        backgroundGradient1.addColorStop(0.3, 'rgba(68, 138, 255, 0.5)');
+        backgroundGradient1.addColorStop(0.6, 'rgba(0, 188, 212, 0.5)');
+        backgroundGradient1.addColorStop(1, 'rgba(29, 233, 182, 0.5)');
+
+        backgroundGradient2.addColorStop(0, 'rgba(244, 67, 54, 0.5)');
+        backgroundGradient2.addColorStop(0.3, 'rgba(245, 0, 87, 0.5)');
+        backgroundGradient2.addColorStop(0.6, 'rgba(255, 64, 129, 0.5)');
+        backgroundGradient2.addColorStop(1, 'rgba(255, 145, 0, 0.5)');
+
+        new Chart(myChartRef, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'Price',
+                        data: price1Data,
+                        borderColor: gradientStroke1,
+                        // backgroundColor: backgroundGradient1,
+                        fill: false,
+                        pointRadius: 0
+                    }
+                    // {
+                    //     label: 'Price',
+                    //     data: price2Data,
+                    //     borderColor: gradientStroke2,
+                    //     backgroundColor: gradientStroke2,
+                    //     // fill: false,
+                    //     pointRadius: 0
+                    // }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [
+                        {
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            gridLines: {
+                                color: 'rgba(0, 0, 0, 0)'
+                            }
+                        }
+                    ],
+                    xAxes: [
+                        {
+                            type: 'time',
+                            gridLines: {
+                                color: 'rgba(0, 0, 0, 0)'
+                            },
+                            time: {
+                                unit: 'day',
+                                unitStepSize: 3,
+                                displayFormats: {
+                                    day: 'MMM DD'
+                                }
+                            }
+                        }
+                    ]
+                },
+                legend: {
+                    display: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                }
+            }
+        });
     }
 
     render() {
-        const idKey = `chart-${this.props.id}`;
-
-        return <div id={idKey} className="PriceGraph" />;
+        return (
+            <div className={classes.graphContainer}>
+                <canvas id="myChart" ref={this.chartRef} />
+            </div>
+        );
     }
 }
 

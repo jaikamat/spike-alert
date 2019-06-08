@@ -8,7 +8,7 @@ const CardDisplay = props => {
     if (props.price2) foilPrice = <div>${props.price2.toFixed(2)}</div>;
     else foilPrice = null;
 
-    let changePrice = props.priceTrends.all_time.price1;
+    const changePrice = props.priceTrends.all_time.price1;
 
     return (
         <div className="ui segment">
