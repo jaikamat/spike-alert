@@ -1,9 +1,11 @@
 const cheerio = require('cheerio');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const pluginStealth = require('puppeteer-extra-plugin-stealth');
 const setCodeJSON = require('./setcodes.json');
 const fs = require('fs');
 const moment = require('moment');
-const ProgressBar = require('progress');
+
+puppeteer.use(pluginStealth());
 
 const BASE_URL = 'https://www.cardsphere.com';
 
@@ -24,11 +26,6 @@ function collectSetPageCardData($) {
         .trim();
 
     const setCode = setCodeJSON[setName];
-
-    // TODO create setName:Foil mapping JSON file
-    // if the set is all foil, designate it here
-    // if set is foil, foilprice is first read
-    // if the set is not foil, first is nonfoil and second is foil
 
     // TODO: Need error handling to catch 'undefined' values
     // when scraping rather than relying on manual logging
@@ -91,29 +88,11 @@ function collectSetLinks($) {
  * page, scraping card data and returning a list array of cards
  */
 async function run() {
-    // Attempt to bypass Puppeteer detection
-    const args = [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-infobars',
-        '--window-position=0,0',
-        '--ignore-certifcate-errors',
-        '--ignore-certifcate-errors-spki-list',
-        '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
-    ];
-
-    // Puppeteer options
     const options = {
-        args,
         headless: true,
         ignoreHTTPSErrors: true,
         userDataDir: './scrape/tmp' // Use to store session data
     };
-
-    // TODO: Create bar after setCode 'undefined' errors are handled properly
-    // let collectBar = new ProgressBar('Collecting cards [:bar] :elapsed sec elapsed', {
-    //     total: 50
-    // });
 
     let cardList = [];
 
@@ -138,7 +117,6 @@ async function run() {
         const cards = collectSetPageCardData($_cards);
 
         cardList = cardList.concat(cards);
-        // collectBar.tick(50 / links.length);
     }
 
     browser.close();
