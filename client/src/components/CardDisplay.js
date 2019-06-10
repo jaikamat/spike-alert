@@ -1,5 +1,6 @@
 import React from 'react';
 import PriceGraph from './PriceGraph';
+import { Segment } from 'semantic-ui-react';
 
 const CardDisplay = props => {
     let foilPrice;
@@ -11,7 +12,7 @@ const CardDisplay = props => {
     const changePrice = props.priceTrends.all_time.price1;
 
     return (
-        <div className="ui raised inverted segment">
+        <Segment inverted>
             <div>
                 <h3>{props.name}</h3>
             </div>
@@ -22,7 +23,7 @@ const CardDisplay = props => {
             <div>
                 <PriceGraph id={props.id} priceHistory={props.priceHistory} />
             </div>
-        </div>
+        </Segment>
     );
 };
 

@@ -1,29 +1,24 @@
 import React from 'react';
-import axios from 'axios';
-import SearchBar from './SearchBar';
-import CardList from './CardList';
+import Home from './Home';
+import Search from './Search';
+import { Route, Link } from 'react-router-dom';
 
 class App extends React.Component {
-    state = { cards: [] };
-
-    onSearchSubmit = async arg => {
-        const response = await axios.get('http://localhost:1337/search', {
-            params: { name: arg }
-        });
-        this.setState({ cards: response.data });
-    };
-
     render() {
-        let cards;
-
-        if (this.state.cards.length > 0) {
-            cards = <CardList cards={this.state.cards} />;
-        }
-
         return (
-            <div className="ui container" style={{ marginTop: '10px' }}>
-                <SearchBar userSearch={this.onSearchSubmit} />
-                {cards}
+            <div>
+                <ul>
+                    <li>
+                        <Link to="/">Home</Link>
+                    </li>
+                    <li>
+                        <Link to="/search">Search</Link>
+                    </li>
+                </ul>
+
+                <Route exact path="/" component={Home} />
+                <Route path="/search" component={Search} />
+                <Route />
             </div>
         );
     }

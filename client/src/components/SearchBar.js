@@ -1,4 +1,5 @@
 import React from 'react';
+import { Form } from 'semantic-ui-react';
 
 class SearchBar extends React.Component {
     state = { term: '' };
@@ -11,16 +12,18 @@ class SearchBar extends React.Component {
     render() {
         return (
             <div className="ui segment">
-                <form onSubmit={this.onFormSubmit} className="ui form">
-                    <div className="field">
+                <Form onSubmit={this.onFormSubmit}>
+                    <Form.Field>
                         <label>Card Search</label>
                         <input
                             type="text"
+                            placeholder="Enter a card name"
                             value={this.state.term}
                             onChange={e => this.setState({ term: e.target.value })}
                         />
-                    </div>
-                </form>
+                    </Form.Field>
+                    <Form.Button>Search</Form.Button>
+                </Form>
             </div>
         );
     }
