@@ -11,7 +11,7 @@ const CardDisplay = props => {
     const changePrice = props.priceTrends.all_time.price1;
 
     return (
-        <div className="ui segment">
+        <div className="ui raised inverted segment">
             <div>
                 <h3>{props.name}</h3>
             </div>

@@ -72,15 +72,15 @@ class PriceGraph extends React.Component {
                         // backgroundColor: backgroundGradient1,
                         fill: false,
                         pointRadius: 0
+                    },
+                    {
+                        label: 'Price',
+                        data: price2Data,
+                        borderColor: gradientStroke2,
+                        // backgroundColor: gradientStroke2,
+                        fill: false,
+                        pointRadius: 0
                     }
-                    // {
-                    //     label: 'Price',
-                    //     data: price2Data,
-                    //     borderColor: gradientStroke2,
-                    //     backgroundColor: gradientStroke2,
-                    //     // fill: false,
-                    //     pointRadius: 0
-                    // }
                 ]
             },
             options: {
