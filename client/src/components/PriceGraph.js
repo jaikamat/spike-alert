@@ -1,6 +1,6 @@
 import React from 'react';
 import Chart from 'chart.js';
-import classes from './PriceGraph.module.css';
+import { graphContainer } from './PriceGraph.module.css';
 import moment from 'moment';
 
 class PriceGraph extends React.Component {
@@ -128,7 +128,7 @@ class PriceGraph extends React.Component {
 
     render() {
         return (
-            <div className={classes.graphContainer}>
+            <div className={graphContainer}>
                 <canvas id="myChart" ref={this.chartRef} />
             </div>
         );

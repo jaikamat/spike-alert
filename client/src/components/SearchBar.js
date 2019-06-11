@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form } from 'semantic-ui-react';
+import { Form, Segment } from 'semantic-ui-react';
 
 class SearchBar extends React.Component {
     state = { term: '' };
@@ -11,7 +11,7 @@ class SearchBar extends React.Component {
 
     render() {
         return (
-            <div className="ui segment">
+            <Segment>
                 <Form onSubmit={this.onFormSubmit}>
                     <Form.Field>
                         <label>Card Search</label>
@@ -24,7 +24,7 @@ class SearchBar extends React.Component {
                     </Form.Field>
                     <Form.Button>Search</Form.Button>
                 </Form>
-            </div>
+            </Segment>
         );
     }
 }
