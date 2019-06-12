@@ -1,7 +1,9 @@
 const CardModel = require('./card').CardModel;
+const NameCacheModel = require('./nameCache').NameCacheModel;
 const createPriceTrends = require('../utils/priceTrendCalc').createPriceTrends;
 const setCodeMapper = require('../utils/setCodes.json');
 const hash = require('../utils/hash').hash;
+const _ = require('lodash');
 
 /**
  * Removes dollar signs and commas from price strings
@@ -51,6 +53,18 @@ async function persistCards(cards, date) {
 }
 
 /**
+ * This grabs all unique card names and caches them for the frontend autocomplete feature
+ */
+async function cacheCardTitles() {
+    const rawTitles = await CardModel.find({}, { name: 1, _id: 0 });
+    const titles = rawTitles.map(card => card.name);
+    const uniqTitles = _.uniq(titles);
+
+    const cache = new NameCacheModel({ cache: uniqTitles });
+    return await NameCacheModel.findOneAndUpdate({}, cache, { upsert: true });
+}
+
+/**
  * Performs a bulk update of all card pricing trend data by using chunking
  * (to prevent querying the whole databse and using up all available V8 memory)
  */
@@ -96,3 +110,4 @@ async function updatePriceTrends() {
 
 module.exports.updatePriceTrends = updatePriceTrends;
 module.exports.persistCards = persistCards;
+module.exports.cacheCardTitles = cacheCardTitles;

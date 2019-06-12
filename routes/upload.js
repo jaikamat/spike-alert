@@ -5,6 +5,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const updatePriceTrends = require('../database/cardController').updatePriceTrends;
 const persistCards = require('../database/cardController').persistCards;
+const cacheCardTitles = require('../database/cardController').cacheCardTitles;
 
 /**
  * Retrieves a date from custom-named filenames
@@ -20,6 +21,7 @@ function getDateFromFilename(filename) {
 
 /**
  * Posts JSON reports scraped from CS to the database
+ * and updates cached card titles
  */
 router.post('/', upload.single('prices'), function(req, res, next) {
     const string = req.file.buffer.toString(); // Convert the buffer to a string
@@ -32,8 +34,12 @@ router.post('/', upload.single('prices'), function(req, res, next) {
     console.log(`Scrape DateTime: ${scrapeDateTime}`);
 
     persistCards(cardArray, scrapeDateTime)
-        .then(bulkWriteInfo => {
-            console.log(bulkWriteInfo);
+        .then(info => {
+            console.log(`Bulk write ${info.result.ok === 1 ? 'OK' : 'ERROR'}`);
+            return cacheCardTitles();
+        })
+        .then(data => {
+            console.log(`Cache was created with ${data.cache.length} titles`);
             res.render('index', { title: 'Upload works!' });
         })
         .catch(console.log);
