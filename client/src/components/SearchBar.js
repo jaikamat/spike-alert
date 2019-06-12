@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Segment } from 'semantic-ui-react';
+import { Form, Segment, Search } from 'semantic-ui-react';
 
 class SearchBar extends React.Component {
     state = { term: '' };

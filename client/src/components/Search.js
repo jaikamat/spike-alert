@@ -4,7 +4,7 @@ import SearchBar from './SearchBar';
 import CardList from './CardList';
 
 class Search extends React.Component {
-    state = { cards: [] };
+    state = { cards: [], autocomplete: [] };
 
     onSearchSubmit = async arg => {
         const response = await axios.get('http://localhost:1337/search', {
@@ -13,7 +13,14 @@ class Search extends React.Component {
         this.setState({ cards: response.data });
     };
 
+    componentDidMount() {
+        axios.get('http://localhost:1337/search/autocomplete').then(res => {
+            this.setState({ autocomplete: res.data.cache });
+        });
+    }
+
     render() {
+        const { autocomplete } = this.state;
         let cards;
 
         if (this.state.cards.length > 0) {
@@ -22,7 +29,7 @@ class Search extends React.Component {
 
         return (
             <div className="ui container" style={{ marginTop: '10px' }}>
-                <SearchBar userSearch={this.onSearchSubmit} />
+                <SearchBar userSearch={this.onSearchSubmit} autocomplete={autocomplete} />
                 {cards}
             </div>
         );
