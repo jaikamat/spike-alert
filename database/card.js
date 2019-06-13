@@ -20,7 +20,8 @@ const CardSchema = new mongoose.Schema({
         monthly: { price1: Number, price2: Number },
         yearly: { price1: Number, price2: Number },
         all_time: { price1: Number, price2: Number }
-    }
+    },
+    setIcon: String
 });
 
 const CardModel = mongoose.model('Card', CardSchema);

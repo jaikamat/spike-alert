@@ -47,11 +47,16 @@ function collectSetPageCardData($) {
             .text()
             .trim();
 
+        const setIcon = $(element)
+            .find('i')
+            .attr('class');
+
         cards.push({
             name: name,
             price1: price1,
             price2: price2,
-            setCode: setCode
+            setCode: setCode,
+            setIcon: setIcon
         });
     });
 

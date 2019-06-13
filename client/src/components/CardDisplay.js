@@ -45,15 +45,18 @@ class CardDisplay extends React.Component {
                         onClick={this.handleClick}
                     >
                         <Segment inverted>
-                            <Grid columns={2}>
+                            <Grid columns={3}>
                                 <Grid.Row>
+                                    <Grid.Column width={1}>
+                                        <i className={`${this.props.setIcon} ss-3x`} />
+                                    </Grid.Column>
                                     <Grid.Column>
                                         <div>
                                             <h3>{this.props.name}</h3>
                                         </div>
                                         <div>{this.props.setName}</div>
                                     </Grid.Column>
-                                    <Grid.Column>
+                                    <Grid.Column floated="right">
                                         <Statistic inverted size="tiny" floated="right">
                                             <Statistic.Value>
                                                 ${this.props.price1.toFixed(2)}
