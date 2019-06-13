@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 import CardList from './CardList';
+import { Grid, Container } from 'semantic-ui-react';
 
 class Search extends React.Component {
     state = { cards: [], autocomplete: [] };
@@ -23,17 +24,21 @@ class Search extends React.Component {
         let cards;
 
         if (this.state.cards.length > 0) {
-            cards = <CardList cards={this.state.cards} />;
+            cards = (
+                <Grid stackable={true}>
+                    <CardList cards={this.state.cards} />
+                </Grid>
+            );
         }
 
         return (
-            <div className="ui container" style={{ marginTop: '10px' }}>
+            <Container>
                 <SearchBar
                     userSearch={this.onSearchSubmit}
                     autocomplete={this.state.autocomplete}
                 />
                 {cards}
-            </div>
+            </Container>
         );
     }
 }

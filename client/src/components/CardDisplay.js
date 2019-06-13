@@ -1,6 +1,6 @@
 import React from 'react';
 import PriceGraph from './PriceGraph';
-import { Segment, Grid, Statistic, Accordion } from 'semantic-ui-react';
+import { Segment, Grid, Statistic, Accordion, Icon } from 'semantic-ui-react';
 
 class CardDisplay extends React.Component {
     state = { activeIndex: -1 };
@@ -29,50 +29,44 @@ class CardDisplay extends React.Component {
 
         // Check to see if the accordion is active, then render the graph
         if (activeIndex === 0) {
-            chart = (
-                // <Segment inverted>
-                <PriceGraph id={this.props.id} priceHistory={this.props.priceHistory} />
-                // </Segment>
-            );
+            chart = <PriceGraph id={this.props.id} priceHistory={this.props.priceHistory} />;
         }
 
         return (
-            <Segment inverted>
+            <Segment>
                 <Accordion>
                     <Accordion.Title
                         active={activeIndex === 0}
                         index={0}
                         onClick={this.handleClick}
                     >
-                        <Segment inverted>
-                            <Grid columns={3}>
-                                <Grid.Row>
-                                    <Grid.Column width={1}>
-                                        <i className={`${this.props.setIcon} ss-3x`} />
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <div>
-                                            <h3>{this.props.name}</h3>
-                                        </div>
-                                        <div>{this.props.setName}</div>
-                                    </Grid.Column>
-                                    <Grid.Column floated="right">
-                                        <Statistic inverted size="tiny" floated="right">
-                                            <Statistic.Value>
-                                                ${this.props.price1.toFixed(2)}
-                                            </Statistic.Value>
-                                            <Statistic.Label>
-                                                {changePrice > 0 ? '+' + changePrice : changePrice}%
-                                            </Statistic.Label>
-                                        </Statistic>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-                        </Segment>
+                        <Grid columns={3}>
+                            <Grid.Row>
+                                <Grid.Column width={1} only="computer">
+                                    <i className={`${this.props.setIcon} ss-3x`} />
+                                </Grid.Column>
+                                <Grid.Column floated="left">
+                                    <div>
+                                        <h3>{this.props.name}</h3>
+                                    </div>
+                                    <div>{this.props.setName}</div>
+                                </Grid.Column>
+                                <Grid.Column floated="right">
+                                    <Statistic size="tiny" floated="right">
+                                        <Statistic.Value>
+                                            ${this.props.price1.toFixed(2)}
+                                        </Statistic.Value>
+                                        <Statistic.Label>
+                                            {changePrice > 0 ? '+' + changePrice : changePrice}%
+                                        </Statistic.Label>
+                                    </Statistic>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 0}>
-                        <Segment inverted>
-                            <Grid columns={2}>
+                        <Segment>
+                            <Grid columns={2} stackable>
                                 <Grid.Column width={5}>
                                     <p>Daily Change: {this.props.priceTrends.daily.price1}</p>
                                     <p>Two-Day Change: {this.props.priceTrends.two_day.price1}</p>

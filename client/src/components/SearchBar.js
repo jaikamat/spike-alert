@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Segment, Search } from 'semantic-ui-react';
+import { Search } from 'semantic-ui-react';
 
 const initialState = { value: '', results: [], isLoading: false };
 
@@ -40,16 +40,14 @@ class SearchBar extends React.Component {
         const { isLoading, results, value } = this.state;
 
         return (
-            <Segment>
-                <Search
-                    input={{ iconPosition: 'left' }}
-                    loading={isLoading}
-                    results={results}
-                    value={value}
-                    onResultSelect={this.handleResultSelect}
-                    onSearchChange={_.debounce(this.handleSearchChange, 500, { leading: true })}
-                />
-            </Segment>
+            <Search
+                input={{ iconPosition: 'left' }}
+                loading={isLoading}
+                results={results}
+                value={value}
+                onResultSelect={this.handleResultSelect}
+                onSearchChange={_.debounce(this.handleSearchChange, 500, { leading: true })}
+            />
         );
     }
 }
