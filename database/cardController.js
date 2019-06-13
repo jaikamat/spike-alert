@@ -37,7 +37,8 @@ async function persistCards(cards, date) {
                             price2: filterPriceString(card.price2),
                             date: new Date(date)
                         }
-                    }
+                    },
+                    setIcon: card.setIcon
                 },
                 upsert: true
             }

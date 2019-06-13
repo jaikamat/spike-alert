@@ -17,6 +17,7 @@ const CardList = props => {
                     price2={currentPrice.price2}
                     priceTrends={item.priceTrends}
                     priceHistory={item.priceHistory}
+                    setIcon={item.setIcon}
                 />
             </Grid.Column>
         );
