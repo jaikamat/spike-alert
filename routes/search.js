@@ -15,7 +15,10 @@ router.get('/', async function(req, res, next) {
 
 router.get('/autocomplete', async function(req, res, next) {
     const titles = await NameCacheModel.findOne({});
-    res.send(titles);
+    const editedTitles = titles.cache.map(name => {
+        return { title: name };
+    });
+    res.send(editedTitles);
 });
 
 module.exports = router;

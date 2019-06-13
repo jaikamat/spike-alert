@@ -15,12 +15,11 @@ class Search extends React.Component {
 
     componentDidMount() {
         axios.get('http://localhost:1337/search/autocomplete').then(res => {
-            this.setState({ autocomplete: res.data.cache });
+            this.setState({ autocomplete: res.data });
         });
     }
 
     render() {
-        const { autocomplete } = this.state;
         let cards;
 
         if (this.state.cards.length > 0) {
@@ -29,7 +28,10 @@ class Search extends React.Component {
 
         return (
             <div className="ui container" style={{ marginTop: '10px' }}>
-                <SearchBar userSearch={this.onSearchSubmit} autocomplete={autocomplete} />
+                <SearchBar
+                    userSearch={this.onSearchSubmit}
+                    autocomplete={this.state.autocomplete}
+                />
                 {cards}
             </div>
         );
