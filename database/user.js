@@ -22,6 +22,7 @@ module.exports.createUser = async function(newUser) {
 };
 
 module.exports.getUserByEmail = async function(email) {
+    console.log('getting email', email);
     return await UserModel.findOne({ email: email });
 };
 
