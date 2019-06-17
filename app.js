@@ -4,11 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var uploadRouter = require('./routes/upload');
-var searchRouter = require('./routes/search');
+var passport = require('./config/passport'); // Configure passport
+var session = require('express-session');
 
 var app = express();
 
@@ -22,9 +19,24 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+// TODO: Research these params: https://github.com/expressjs/session#options for parameter meanings
+app.use(
+    session({
+        secret: 'thisshouldbeinanotherfile',
+        saveUninitialized: true,
+        resave: false
+    })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+var indexRouter = require('./routes/index');
+var authRouter = require('./routes/auth')(passport);
+var uploadRouter = require('./routes/upload');
+var searchRouter = require('./routes/search');
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 app.use('/upload', uploadRouter);
 app.use('/search', searchRouter);
 
