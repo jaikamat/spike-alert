@@ -6,7 +6,8 @@ module.exports = function(passport) {
     /* GET users listing. */
     // TODO: Muse secure this route
     router.get('/', function(req, res, next) {
-        res.send('respond with a User');
+        if (!req.user) res.send('not authenticated');
+        else res.send('respond with a User');
     });
 
     /* CREATE a user */
@@ -16,15 +17,14 @@ module.exports = function(passport) {
 
         if (password === password2) {
             const newUser = new UserModel({
-                username: req.body.username,
                 email: req.body.email,
                 password: req.body.password
             });
 
             return UserModel.createUser(newUser)
                 .then(user => {
-                    console.log(`User ${user.username} created!`);
-                    res.redirect(307, '/auth/login');
+                    console.log(`User ${user.email} created!`);
+                    res.send({ user: user.email });
                 })
                 .catch(console.log);
         } else {
@@ -40,7 +40,7 @@ module.exports = function(passport) {
     /* LOGOUT a user */
     router.get('/logout', function(req, res) {
         req.logout();
-        res.redirect('/');
+        res.send({ logout: true });
     });
 
     return router;

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
-    username: String,
+    // username: String,
     email: String,
     password: String
     // cardList: [{ type: Number, ref: 'Card' }]
@@ -21,8 +21,8 @@ module.exports.createUser = async function(newUser) {
     return await newUser.save();
 };
 
-module.exports.getUserByUsername = async function(username) {
-    return await UserModel.findOne({ username: username });
+module.exports.getUserByEmail = async function(email) {
+    return await UserModel.findOne({ email: email });
 };
 
 module.exports.getUserById = async function(id) {

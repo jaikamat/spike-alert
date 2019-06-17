@@ -2,6 +2,7 @@ import React from 'react';
 import Home from './Home';
 import Search from './Search';
 import Login from './Login';
+import Signup from './Signup';
 import { Route, Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 
@@ -43,12 +44,21 @@ class App extends React.Component {
                             onClick={this.handleClick}
                             active={'Login' === activeItem}
                         />
+                        <Menu.Item
+                            as={Link}
+                            to="/signup"
+                            name="Signup"
+                            // position="right"
+                            onClick={this.handleClick}
+                            active={'Signup' === activeItem}
+                        />
                     </Menu.Menu>
                 </Menu>
                 <div style={{ marginTop: 50 }}>
                     <Route exact path="/" component={Home} />
                     <Route path="/search" component={Search} />
                     <Route path="/login" component={Login} />
+                    <Route path="/signup" component={Signup} />
                     <Route />
                 </div>
             </div>

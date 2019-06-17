@@ -3,11 +3,11 @@ const LocalStrategy = require('passport-local');
 const UserModel = require('../database/user');
 
 passport.use(
-    new LocalStrategy(function(username, password, done) {
-        UserModel.getUserByUsername(username).then(user => {
+    new LocalStrategy(function(email, password, done) {
+        UserModel.getUserByEmail(email).then(user => {
             if (!user) {
                 return done(null, false, {
-                    message: 'Incorrect username'
+                    message: 'Incorrect email'
                 });
             } else if (!UserModel.comparePassword(password, user.password)) {
                 return done(null, false, {
