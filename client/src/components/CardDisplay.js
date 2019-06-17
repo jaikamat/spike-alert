@@ -1,23 +1,26 @@
 import React from 'react';
 import PriceGraph from './PriceGraph';
-import { Segment, Grid, Statistic, Accordion, Icon } from 'semantic-ui-react';
+import { Segment, Grid, Statistic, Accordion } from 'semantic-ui-react';
 
 class CardDisplay extends React.Component {
-    state = { activeIndex: -1 };
+    state = { collapsed: true };
 
     handleClick = (e, el) => {
-        const { index } = el;
-        const { activeIndex } = this.state;
-        const newIndex = activeIndex === index ? -1 : index;
-
         this.setState({
-            activeIndex: newIndex,
-            visible: !this.state.visible
+            collapsed: !this.state.collapsed
         });
     };
 
+    // This collapses all open accordion components when the user searches
+    // while other accordions are open
+    componentDidUpdate(prevProps) {
+        if (this.props.id !== prevProps.id && !this.state.collapsed) {
+            this.setState({ collapsed: true });
+        }
+    }
+
     render() {
-        const { activeIndex } = this.state;
+        const { collapsed } = this.state;
         let foilPrice, chart;
 
         // If price2 exists in addition to price1, foil printing exists
@@ -28,18 +31,14 @@ class CardDisplay extends React.Component {
         const changePrice = this.props.priceTrends.all_time.price1;
 
         // Check to see if the accordion is active, then render the graph
-        if (activeIndex === 0) {
+        if (!collapsed) {
             chart = <PriceGraph id={this.props.id} priceHistory={this.props.priceHistory} />;
         }
 
         return (
             <Segment>
                 <Accordion>
-                    <Accordion.Title
-                        active={activeIndex === 0}
-                        index={0}
-                        onClick={this.handleClick}
-                    >
+                    <Accordion.Title active={!collapsed} index={0} onClick={this.handleClick}>
                         <Grid columns={3}>
                             <Grid.Row>
                                 <Grid.Column width={1} only="computer">
@@ -64,7 +63,7 @@ class CardDisplay extends React.Component {
                             </Grid.Row>
                         </Grid>
                     </Accordion.Title>
-                    <Accordion.Content active={activeIndex === 0}>
+                    <Accordion.Content active={!collapsed}>
                         <Segment>
                             <Grid columns={2} stackable>
                                 <Grid.Column width={5}>
