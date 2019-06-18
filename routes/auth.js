@@ -41,7 +41,10 @@ module.exports = function(passport) {
                     console.log(`User ${user.email} created!`);
                     res.send({ user: user.email });
                 })
-                .catch(console.log);
+                .catch(err => {
+                    console.log(err);
+                    res.send(err);
+                });
         } else {
             res.status(500).send('Passwords do not match');
         }
