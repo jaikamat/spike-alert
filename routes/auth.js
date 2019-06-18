@@ -15,7 +15,22 @@ module.exports = function(passport) {
         const password = req.body.password;
         const password2 = req.body.password2;
 
+        // Check for email
+        if (!req.body.email) res.status(500).send('Email is required');
+
+        // Validate email syntax
+        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test(String(req.body.email).toLowerCase())) {
+            return res.status(500).send('Email is not the correct format');
+        }
+
+        // Validate supplied passwords
         if (password === password2) {
+            // Validate password length
+            if (req.body.password.length < 6 || req.body.password2.length < 6) {
+                res.status(500).send('Password is too short');
+            }
+
             const newUser = new UserModel({
                 email: req.body.email,
                 password: req.body.password
