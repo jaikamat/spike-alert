@@ -1,6 +1,7 @@
 const CardModel = require('./card').CardModel;
 const NameCacheModel = require('./nameCache').NameCacheModel;
 const createPriceTrends = require('../utils/priceTrendCalc').createPriceTrends;
+const calculateFoilMultiplier = require('../utils/priceTrendCalc').calculateFoilMultiplier;
 const setCodeMapper = require('../utils/setCodes.json');
 const hash = require('../utils/hash').hash;
 const _ = require('lodash');
@@ -87,7 +88,8 @@ async function updatePriceTrends() {
                 updateOne: {
                     filter: { _id: doc._id },
                     update: {
-                        priceTrends: createPriceTrends(doc.priceHistory)
+                        priceTrends: createPriceTrends(doc.priceHistory),
+                        foilMultiplier: calculateFoilMultiplier(doc.priceHistory)
                     }
                 }
             };

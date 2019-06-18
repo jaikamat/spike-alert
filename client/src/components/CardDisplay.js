@@ -76,10 +76,7 @@ class CardDisplay extends React.Component {
                                     <p>Monthly Change: {this.props.priceTrends.monthly.price1}</p>
                                     <p>All-Time Change: {this.props.priceTrends.all_time.price1}</p>
                                     <p>Foil Price: ${foilPrice}</p>
-                                    <p>
-                                        Foil Multiplier:{' '}
-                                        {(this.props.price2 / this.props.price1).toFixed(2)}
-                                    </p>
+                                    <p>Foil Multiplier: {this.props.foilMultiplier}</p>
                                 </Grid.Column>
                                 <Grid.Column width={11}>{chart}</Grid.Column>
                             </Grid>

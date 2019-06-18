@@ -21,6 +21,7 @@ const CardSchema = new mongoose.Schema({
         yearly: { price1: Number, price2: Number },
         all_time: { price1: Number, price2: Number }
     },
+    foilMultiplier: Number,
     setIcon: String
 });
 

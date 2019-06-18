@@ -18,6 +18,7 @@ const CardList = props => {
                 priceTrends={item.priceTrends}
                 priceHistory={item.priceHistory}
                 setIcon={item.setIcon}
+                foilMultiplier={item.foilMultiplier}
             />
         );
     });

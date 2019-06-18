@@ -174,4 +174,17 @@ function createPriceTrends(priceHistory) {
     };
 }
 
+/**
+ * Returns the current foil miltipler for the current card price
+ */
+function calculateFoilMultiplier(priceHistory) {
+    const currentPrices = priceHistory[priceHistory.length - 1];
+    const price1 = currentPrices.price1;
+    const price2 = currentPrices.price2;
+
+    if (price1 && price2) return (price2 / price1).toFixed(2);
+    else return null;
+}
+
 module.exports.createPriceTrends = createPriceTrends;
+module.exports.calculateFoilMultiplier = calculateFoilMultiplier;
