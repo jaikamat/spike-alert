@@ -1,5 +1,6 @@
 import React from 'react';
 import PriceGraph from './PriceGraph';
+import CardImage from './CardImage/CardImage';
 import { Segment, Grid, Statistic, Accordion } from 'semantic-ui-react';
 
 class CardDisplay extends React.Component {
@@ -66,8 +67,12 @@ class CardDisplay extends React.Component {
                     <Accordion.Content active={!collapsed}>
                         <Segment>
                             <Grid columns={2} stackable>
-                                <Grid.Column width={5}>
-                                    <p>Daily Change: {this.props.priceTrends.daily.price1}</p>
+                                <Grid.Column width={5} only="computer">
+                                    <CardImage
+                                        cardName={this.props.name}
+                                        setCode={this.props.setCode}
+                                    />
+                                    {/* <p>Daily Change: {this.props.priceTrends.daily.price1}</p>
                                     <p>Two-Day Change: {this.props.priceTrends.two_day.price1}</p>
                                     <p>
                                         Three-Day Change: {this.props.priceTrends.three_day.price1}
@@ -76,7 +81,7 @@ class CardDisplay extends React.Component {
                                     <p>Monthly Change: {this.props.priceTrends.monthly.price1}</p>
                                     <p>All-Time Change: {this.props.priceTrends.all_time.price1}</p>
                                     <p>Foil Price: ${foilPrice}</p>
-                                    <p>Foil Multiplier: {this.props.foilMultiplier}</p>
+                                    <p>Foil Multiplier: {this.props.foilMultiplier}</p> */}
                                 </Grid.Column>
                                 <Grid.Column width={11}>{chart}</Grid.Column>
                             </Grid>
