@@ -21,14 +21,14 @@ module.exports = function(passport) {
         // Validate email syntax
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test(String(req.body.email).toLowerCase())) {
-            return res.status(500).send('Email is not the correct format');
+            return res.status(500).send("Your email isn't the correct format");
         }
 
         // Validate supplied passwords
         if (password === password2) {
             // Validate password length
             if (req.body.password.length < 6 || req.body.password2.length < 6) {
-                res.status(500).send('Password is too short');
+                res.status(500).send('Your password is too short');
             }
 
             const newUser = new UserModel({
@@ -43,10 +43,10 @@ module.exports = function(passport) {
                 })
                 .catch(err => {
                     console.log(err);
-                    res.send(err);
+                    res.status(500).send(err);
                 });
         } else {
-            res.status(500).send('Passwords do not match');
+            res.status(500).send("Your passwords don't match");
         }
     });
 
