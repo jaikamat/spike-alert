@@ -73,5 +73,10 @@ export default {
         query: 'set',
         code: 'PUMA',
         filter: 'game:paper'
+    },
+    RPTQPROM: {
+        query: 'set',
+        code: 'PPRO',
+        filter: 'game:paper'
     }
 };
