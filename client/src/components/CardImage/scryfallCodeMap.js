@@ -5,8 +5,8 @@ export default {
         filter: 'game:paper'
     },
     MPS_KLD: {
-        query: 'st',
-        code: 'masterpiece',
+        query: 'set',
+        code: 'MPS',
         filter: 'game:paper'
     },
     MPS: {
@@ -68,5 +68,10 @@ export default {
         query: 'set',
         code: 'CED',
         filter: ''
+    },
+    MPS_UMA: {
+        query: 'set',
+        code: 'PUMA',
+        filter: 'game:paper'
     }
 };
