@@ -78,5 +78,55 @@ export default {
         query: 'set',
         code: 'PPRO',
         filter: 'game:paper'
+    },
+    GK_AZORIUS: {
+        query: 'set',
+        code: 'GK2',
+        filter: 'game:paper'
+    },
+    GK_BOROS: {
+        query: 'set',
+        code: 'GK1',
+        filter: 'game:paper'
+    },
+    GK_DIMIR: {
+        query: 'set',
+        code: 'GK1',
+        filter: 'game:paper'
+    },
+    GK_GOLGARI: {
+        query: 'set',
+        code: 'GK1',
+        filter: 'game:paper'
+    },
+    GK_GRUUL: {
+        query: 'set',
+        code: 'GK2',
+        filter: 'game:paper'
+    },
+    GK_IZZET: {
+        query: 'set',
+        code: 'GK1',
+        filter: 'game:paper'
+    },
+    GK_ORZHOV: {
+        query: 'set',
+        code: 'GK2',
+        filter: 'game:paper'
+    },
+    GK_RAKDOS: {
+        query: 'set',
+        code: 'GK2',
+        filter: 'game:paper'
+    },
+    GK_SELESNYA: {
+        query: 'set',
+        code: 'GK1',
+        filter: 'game:paper'
+    },
+    GK_SIMIC: {
+        query: 'set',
+        code: 'GK2',
+        filter: 'game:paper'
     }
 };
