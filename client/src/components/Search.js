@@ -8,16 +8,19 @@ class Search extends React.Component {
     state = { cards: [], autocomplete: [] };
 
     onSearchSubmit = async arg => {
-        const response = await axios.get('http://localhost:1337/search', {
+        const res = await axios.get('http://localhost:1337/search', {
             params: { name: arg }
         });
-        this.setState({ cards: response.data });
+        this.setState({ cards: res.data });
     };
 
     componentDidMount() {
-        axios.get('http://localhost:1337/search/autocomplete').then(res => {
-            this.setState({ autocomplete: res.data });
-        });
+        axios
+            .get('http://localhost:1337/search/autocomplete')
+            .then(res => {
+                this.setState({ autocomplete: res.data });
+            })
+            .catch(err => console.log(err));
     }
 
     render() {

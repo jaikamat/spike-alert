@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Form, Button, Segment, Container } from 'semantic-ui-react';
 
 const initialState = { email: '', password: '' };
+const storage = window.localStorage;
 
 class Login extends React.Component {
     state = initialState;
@@ -16,12 +17,18 @@ class Login extends React.Component {
 
     handleSubmit = () => {
         axios
-            .post('http://localhost:1337/auth/login', {
-                username: this.state.email,
-                password: this.state.password
-            })
+            .post(
+                'http://localhost:1337/auth/login',
+                {
+                    username: this.state.email,
+                    password: this.state.password
+                },
+                { withCredentials: true }
+            )
             .then(res => {
                 console.log(res);
+                storage.setItem('username', res.data.email);
+                storage.setItem('userId', res.data._id);
                 this.setState(initialState);
             })
             .catch(err => console.log(err.response.data));

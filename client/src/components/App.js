@@ -3,6 +3,8 @@ import Home from './Home';
 import Search from './Search';
 import Login from './Login';
 import Signup from './Signup';
+import MyList from './MyList';
+import Logout from './Logout';
 import { Route, Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 
@@ -38,6 +40,14 @@ class App extends React.Component {
                         />
                         <Menu.Item
                             as={Link}
+                            to="/myList"
+                            name="MyList"
+                            // position="right"
+                            onClick={this.handleClick}
+                            active={'MyList' === activeItem}
+                        />
+                        <Menu.Item
+                            as={Link}
                             to="/login"
                             name="Login"
                             // position="right"
@@ -52,6 +62,14 @@ class App extends React.Component {
                             onClick={this.handleClick}
                             active={'Signup' === activeItem}
                         />
+                        <Menu.Item
+                            as={Link}
+                            to="/logout"
+                            name="Logout"
+                            // position="right"
+                            onClick={this.handleClick}
+                            active={'Logout' === activeItem}
+                        />
                     </Menu.Menu>
                 </Menu>
                 <div style={{ marginTop: 50 }}>
@@ -59,6 +77,8 @@ class App extends React.Component {
                     <Route path="/search" component={Search} />
                     <Route path="/login" component={Login} />
                     <Route path="/signup" component={Signup} />
+                    <Route path="/myList" component={MyList} />
+                    <Route path="/logout" component={Logout} />
                     <Route />
                 </div>
             </div>

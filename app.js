@@ -18,7 +18,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+// Specificity required to enable axios to make "credentialized" client requests
+app.use(
+    cors({
+        origin: 'http://localhost:3000',
+        credentials: true
+    })
+);
 // TODO: Research these params: https://github.com/expressjs/session#options for parameter meanings
 app.use(
     session({

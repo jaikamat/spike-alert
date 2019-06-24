@@ -46,13 +46,24 @@ class Signup extends React.Component {
     };
 
     handleSubmit = () => {
-        const { emailError, passwordLengthError, passwordMatchError } = this.state;
+        const {
+            email,
+            password,
+            password2,
+            emailError,
+            passwordLengthError,
+            passwordMatchError
+        } = this.state;
         if (emailError || passwordLengthError || passwordMatchError) return;
 
         this.setState({ loading: true });
 
         axios
-            .post('http://localhost:1337/auth/signup', { ...this.state })
+            .post('http://localhost:1337/auth/signup', {
+                email: email,
+                password: password,
+                password2: password2
+            })
             .then(res => {
                 this.setState({
                     ...initialState,
@@ -145,7 +156,7 @@ class Signup extends React.Component {
                         <Message
                             success
                             header="Signup complete"
-                            content="Enjoy searching for cards! Profit!"
+                            content="Navigate to Login and log in now!"
                         />
                         <Button type="submit">Create your account</Button>
                     </Form>
