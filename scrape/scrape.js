@@ -51,13 +51,22 @@ function collectSetPageCardData($) {
             .find('i')
             .attr('class');
 
-        cards.push({
+        let cardData = {
             name: name,
             price1: price1,
             price2: price2,
             setCode: setCode,
             setIcon: setIcon
-        });
+        };
+
+        // Performs a check to see if price1 has been incorrectly logged as price2.
+        // Reformats the card object in case
+        if (!price1 && price2) {
+            cardData.price1 = price2;
+            cardData.price2 = '';
+        }
+
+        cards.push(cardData);
     });
 
     return cards;
