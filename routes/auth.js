@@ -52,6 +52,7 @@ module.exports = function(passport) {
 
     /* LOGIN a user */
     router.post('/login', passport.authenticate('local'), function(req, res, next) {
+        console.log(req.user);
         res.send('user logged in!');
     });
 

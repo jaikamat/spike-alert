@@ -34,11 +34,13 @@ var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth')(passport);
 var uploadRouter = require('./routes/upload');
 var searchRouter = require('./routes/search');
+var userRouter = require('./routes/user');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/upload', uploadRouter);
 app.use('/search', searchRouter);
+app.use('/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

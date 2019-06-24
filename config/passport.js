@@ -3,8 +3,8 @@ const LocalStrategy = require('passport-local');
 const UserModel = require('../database/user');
 
 passport.use(
-    new LocalStrategy(function(email, password, done) {
-        UserModel.getUserByEmail(email).then(user => {
+    new LocalStrategy(function(username, password, done) {
+        UserModel.getUserByEmail(username).then(user => {
             if (!user) {
                 return done(null, false, {
                     message: 'Incorrect email'
