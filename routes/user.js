@@ -2,22 +2,30 @@ const express = require('express');
 const router = express.Router();
 const UserModel = require('../database/user');
 
-router.get('/', function(req, res) {
-    UserModel.addCardToList('5d10fe571ab4356e2a170c1f', 112242890)
-        .then(user => {
-            res.send(user);
-        })
+// Get user info
+router.get('/:userId', function(req, res) {
+    return UserModel.getUserById(req.params.userId)
+        .then(user => res.send(user))
+        .catch(err => console.log(error));
+});
+
+// Add card to user card list
+router.post('/:userId/list/:cardId', function(req, res) {
+    UserModel.addCardToList(req.params.userId, req.params.cardId)
+        .then(user => res.send(user))
         .catch(error => console.log(error));
 });
 
-router.get('/list', function(req, res) {
-    UserModel.getUserList('5d10fe571ab4356e2a170c1f')
+// Get user card list
+router.get('/:userId/list', function(req, res) {
+    UserModel.getUserList(req.params.userId)
         .then(list => res.send(list))
         .catch(error => console.log(error));
 });
 
-router.delete('/list', function(req, res) {
-    UserModel.removeCardFromList('5d10fe571ab4356e2a170c1f', 112242890)
+// Delete card from user card list
+router.put('/:userId/list/:cardId', function(req, res) {
+    UserModel.removeCardFromList(req.params.userId, req.params.cardId)
         .then(user => res.send(user))
         .catch(error => console.log(error));
 });
