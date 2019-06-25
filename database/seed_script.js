@@ -6,18 +6,9 @@ const FormData = require('form-data');
 let filenames = fs.readdirSync('./scrape/scraped_data');
 
 /**
- * Wraps POST request in async function to allow synchronous iteration
- * @param {object} dataOpts
- */
-async function postCards(dataOpts) {
-    const res = await axios(dataOpts);
-    return res;
-}
-
-/**
  * Iterates over each scraped filename, creating formdata and uploading it to the db via POST.
  */
-(async function upload() {
+async function uploadScrapedFiles() {
     for (let i = 0; i < filenames.length; i++) {
         let form = new FormData();
         form.append('prices', fs.createReadStream(`./scrape/scraped_data/${filenames[i]}`));
@@ -29,10 +20,25 @@ async function postCards(dataOpts) {
             headers: { ...form.getHeaders() }
         };
 
-        await postCards(data)
+        await axios(data)
             .then(() => {
                 console.log(`${filenames[i]} uploaded`);
             })
             .catch(console.log);
     }
-})();
+}
+
+/**
+ * Updates the prices after all the scraped json has been persisted
+ */
+async function updatePrices() {
+    return await axios.post('http://localhost:1337/upload/update-prices');
+}
+
+async function seed() {
+    await uploadScrapedFiles();
+    await updatePrices();
+    console.log('Database seeded');
+}
+
+seed();
