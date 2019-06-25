@@ -24,7 +24,7 @@ router.get('/:userId', isAuthenticated, function(req, res) {
 // Add card to user card list
 router.post('/:userId/list/:cardId', isAuthenticated, function(req, res) {
     UserModel.addCardToList(req.params.userId, req.params.cardId)
-        .then(user => res.send(user))
+        .then(user => res.send(user.cardList))
         .catch(error => res.send(error));
 });
 
@@ -38,7 +38,7 @@ router.get('/:userId/list', isAuthenticated, function(req, res) {
 // Delete card from user card list
 router.put('/:userId/list/:cardId', isAuthenticated, function(req, res) {
     UserModel.removeCardFromList(req.params.userId, req.params.cardId)
-        .then(user => res.send(user))
+        .then(user => res.send(user.cardList))
         .catch(error => res.send(error));
 });
 

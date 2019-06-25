@@ -1,6 +1,7 @@
 import React from 'react';
 import PriceGraph from './PriceGraph';
 import CardImage from './CardImage/CardImage';
+import UserListButton from './UserListButton';
 import { Segment, Grid, Statistic, Accordion } from 'semantic-ui-react';
 
 class CardDisplay extends React.Component {
@@ -83,7 +84,15 @@ class CardDisplay extends React.Component {
                                     <p>Foil Price: ${foilPrice}</p>
                                     <p>Foil Multiplier: {this.props.foilMultiplier}</p> */}
                                 </Grid.Column>
-                                <Grid.Column width={11}>{chart}</Grid.Column>
+                                <Grid.Column width={11}>
+                                    {chart}
+                                    <UserListButton
+                                        cardId={this.props.id}
+                                        userList={this.props.userList}
+                                        addCardToList={this.props.addCardToList}
+                                        removeCardFromList={this.props.removeCardFromList}
+                                    />
+                                </Grid.Column>
                             </Grid>
                         </Segment>
                     </Accordion.Content>

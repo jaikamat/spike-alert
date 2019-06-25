@@ -37,7 +37,8 @@ module.exports.addCardToList = async function(userId, cardId) {
 
     user.cardList.push({ _id: cardId });
 
-    return user.save();
+    await user.save();
+    return await UserModel.findById(userId).populate('cardList');
 };
 
 module.exports.getUserList = async function(userId) {
@@ -47,7 +48,7 @@ module.exports.getUserList = async function(userId) {
 };
 
 module.exports.removeCardFromList = async function(userId, cardId) {
-    return await UserModel.findOneAndUpdate(
+    await UserModel.findOneAndUpdate(
         { _id: userId },
         {
             $pull: {
@@ -58,4 +59,6 @@ module.exports.removeCardFromList = async function(userId, cardId) {
             new: true
         }
     );
+
+    return await UserModel.findById(userId).populate('cardList');
 };
