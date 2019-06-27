@@ -38,7 +38,8 @@ async function updatePrices() {
 async function seed() {
     await uploadScrapedFiles();
     await updatePrices();
-    console.log('Database seeded');
 }
 
-seed();
+seed()
+    .then(() => console.log('Database seeded'))
+    .catch(err => console.log(err));

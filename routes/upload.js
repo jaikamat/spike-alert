@@ -49,6 +49,9 @@ router.post('/', upload.single('prices'), function(req, res, next) {
  * Updates card price trends
  */
 router.post('/update-prices', function(req, res, next) {
+    // Set the timeout for 10 mins - this route does dome heavy lifting
+    req.setTimeout(600000);
+
     updatePriceTrends()
         .then(msg => {
             res.send(msg);
