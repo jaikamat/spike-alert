@@ -5,6 +5,7 @@ const CardSchema = new mongoose.Schema({
     name: String,
     setCode: String,
     setName: String,
+    isOnlyFoil: Boolean,
     priceHistory: [
         {
             price1: Number,

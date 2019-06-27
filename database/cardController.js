@@ -2,7 +2,6 @@ const CardModel = require('./card').CardModel;
 const NameCacheModel = require('./nameCache').NameCacheModel;
 const createPriceTrends = require('../utils/priceTrendCalc').createPriceTrends;
 const calculateFoilMultiplier = require('../utils/priceTrendCalc').calculateFoilMultiplier;
-const setCodeMapper = require('../utils/setCodes.json');
 const hash = require('../utils/hash').hash;
 const _ = require('lodash');
 
@@ -30,8 +29,9 @@ async function persistCards(cards, date) {
                 filter: { _id: hash(card.name + card.setCode) },
                 update: {
                     name: card.name,
-                    setName: setCodeMapper[card.setCode],
+                    setName: card.setName,
                     setCode: card.setCode,
+                    isOnlyFoil: card.isOnlyFoil,
                     $push: {
                         priceHistory: {
                             price1: filterPriceString(card.price1),

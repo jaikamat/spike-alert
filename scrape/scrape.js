@@ -13,66 +13,6 @@ const BASE_URL = 'https://www.cardsphere.com';
 const filenameDatetime = moment().format('MM-DD-YYYY--x');
 
 /**
- * Iterates over all cards in a set page,
- * collecting the card pricing data
- * @param {string} url
- */
-function collectSetPageCardData($) {
-    let cards = [];
-    let rows = $('.cards ul > li');
-
-    const setName = $('h3')
-        .text()
-        .trim();
-
-    const setCode = setCodeJSON[setName];
-
-    // TODO: Need error handling to catch 'undefined' values
-    // when scraping rather than relying on manual logging
-    console.log(setName, setCode);
-
-    rows.each(function(index, element) {
-        const name = $(element)
-            .find('a')
-            .text()
-            .trim();
-
-        const price1 = $(element)
-            .children('span:nth-child(2)')
-            .text()
-            .trim();
-
-        const price2 = $(element)
-            .children('span:nth-child(3)')
-            .text()
-            .trim();
-
-        const setIcon = $(element)
-            .find('i')
-            .attr('class');
-
-        let cardData = {
-            name: name,
-            price1: price1,
-            price2: price2,
-            setCode: setCode,
-            setIcon: setIcon
-        };
-
-        // Performs a check to see if price1 has been incorrectly logged as price2.
-        // Reformats the card object in case
-        if (!price1 && price2) {
-            cardData.price1 = price2;
-            cardData.price2 = '';
-        }
-
-        cards.push(cardData);
-    });
-
-    return cards;
-}
-
-/**
  * Returns an array of whole url's based on
  * the BASE_URL, for puppeteer to process
  * @param {array} urls
@@ -126,9 +66,53 @@ async function run() {
     for (let i = 0; i < links.length; i++) {
         await page.goto(links[i]);
         await page.waitFor(750); // Must wait for ::before and ::after pseudo elements to populate in UI
-        const cardHTML = await page.evaluate(() => document.body.innerHTML);
-        const $_cards = cheerio.load(cardHTML);
-        const cards = collectSetPageCardData($_cards);
+
+        const setName = await page.$eval('h3', el => el.innerText.trim());
+
+        // Grabs all card rows in set page, and collects the data
+        const cards = await page.evaluate(setCodeJSON => {
+            const data = [];
+            const rows = document.querySelectorAll('.cards ul > li');
+            const setName = document.querySelector('h3').innerText.trim();
+            const setCode = setCodeJSON[setName];
+
+            rows.forEach(row => {
+                const name = row.querySelector('a').innerText.trim();
+                const link = row.querySelector('a').href;
+
+                const price1 = row.querySelector('span:nth-child(2)').innerText.trim();
+                const price2 = row.querySelector('span:nth-child(3)').innerText.trim();
+                const setIcon = row
+                    .querySelector('i')
+                    .getAttribute('class')
+                    .trim();
+
+                let cardData = {
+                    name: name,
+                    link: link,
+                    price1: price1,
+                    price2: price2,
+                    setIcon: setIcon,
+                    setCode: setCode,
+                    setName: setName,
+                    isOnlyFoil: false
+                };
+
+                // Performs a check to see if only price2 has been logged
+                // This reformats the card object, and proves a card is only foil
+                if (!price1 && price2) {
+                    cardData.price1 = price2;
+                    cardData.price2 = '';
+                    cardData.isOnlyFoil = true;
+                }
+
+                data.push(cardData);
+            });
+
+            return data;
+        }, setCodeJSON);
+
+        console.log(`${setName} | scraped`);
 
         cardList = cardList.concat(cards);
     }
@@ -141,6 +125,6 @@ async function run() {
 run()
     .then(cards => {
         fs.writeFileSync(`./scrape/scraped_data/${filenameDatetime}.json`, JSON.stringify(cards));
-        console.log('Scrape finished!');
+        console.log('Scrape finished');
     })
     .catch(console.error);
