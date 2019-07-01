@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Form, Button, Segment, Container, Label, Message } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
 
 const initialState = {
     email: '',
@@ -9,7 +10,8 @@ const initialState = {
     emailError: false,
     passwordLengthError: false,
     passwordMatchError: false,
-    serverError: false
+    serverError: false,
+    redirectToHome: false
 };
 
 class Signup extends React.Component {
@@ -66,10 +68,13 @@ class Signup extends React.Component {
             })
             .then(res => {
                 this.setState({
-                    ...initialState,
+                    redirectToHome: true,
                     userCreated: true,
                     loading: false
                 });
+                window.localStorage.setItem('username', res.data.email);
+                window.localStorage.setItem('userId', res.data._id);
+                this.props.checkAuth();
             })
             .catch(err => {
                 let msg;
@@ -95,6 +100,10 @@ class Signup extends React.Component {
             passwordLengthError,
             passwordMatchError
         } = this.state;
+
+        if (this.state.redirectToHome) {
+            return <Redirect to="/" />;
+        }
 
         return (
             <Container>

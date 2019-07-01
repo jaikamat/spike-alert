@@ -38,8 +38,11 @@ module.exports = function(passport) {
 
             return UserModel.createUser(newUser)
                 .then(user => {
-                    console.log(`User ${user.email} created!`);
-                    res.send({ user: user.email });
+                    return req.login(user, function(err) {
+                        if (err) console.log(err);
+                        console.log(`User ${user.email} created!`);
+                        res.send({ email: user.email, _id: user._id });
+                    });
                 })
                 .catch(err => {
                     console.log(err);

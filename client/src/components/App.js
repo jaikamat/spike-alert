@@ -99,7 +99,12 @@ class App extends React.Component {
                             return <Login {...props} checkAuth={this.checkAuth} />;
                         }}
                     />
-                    <Route path="/signup" component={Signup} />
+                    <Route
+                        path="/signup"
+                        render={props => {
+                            return <Signup {...props} checkAuth={this.checkAuth} />;
+                        }}
+                    />
                     <Route path="/myList" component={MyList} />
                     <Route
                         path="/logout"
