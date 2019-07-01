@@ -1,8 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import { Form, Button, Segment, Container } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
 
-const initialState = { email: '', password: '' };
+const initialState = { email: '', password: '', redirectToHome: false };
 const storage = window.localStorage;
 
 class Login extends React.Component {
@@ -29,12 +30,17 @@ class Login extends React.Component {
                 console.log(res);
                 storage.setItem('username', res.data.email);
                 storage.setItem('userId', res.data._id);
-                this.setState(initialState);
+                this.setState({ redirectToHome: true });
+                this.props.checkAuth();
             })
             .catch(err => console.log(err.response.data));
     };
 
     render() {
+        if (this.state.redirectToHome) {
+            return <Redirect to="/" />;
+        }
+
         return (
             <Container>
                 <Segment>
@@ -51,6 +57,7 @@ class Login extends React.Component {
                         <Form.Field>
                             <label>Password</label>
                             <input
+                                type="password"
                                 placeholder="Password"
                                 name="password"
                                 onChange={this.handleChange}

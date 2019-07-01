@@ -9,13 +9,23 @@ import { Route, Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 
 class App extends React.Component {
-    state = { activeItem: 'Home' };
+    state = { activeItem: 'Home', userLoggedIn: false };
 
     handleClick = (e, el) => {
         this.setState({ activeItem: el.name });
     };
 
+    checkAuth = () => {
+        const userLoggedIn = !!window.localStorage.username;
+        this.setState({ userLoggedIn: userLoggedIn });
+    };
+
+    componentDidMount() {
+        this.checkAuth();
+    }
+
     render() {
+        const { userLoggedIn } = this.state;
         const activeItem = this.state.activeItem;
 
         return (
@@ -38,47 +48,65 @@ class App extends React.Component {
                             onClick={this.handleClick}
                             active={'Search' === activeItem}
                         />
-                        <Menu.Item
-                            as={Link}
-                            to="/myList"
-                            name="MyList"
-                            // position="right"
-                            onClick={this.handleClick}
-                            active={'MyList' === activeItem}
-                        />
-                        <Menu.Item
-                            as={Link}
-                            to="/login"
-                            name="Login"
-                            // position="right"
-                            onClick={this.handleClick}
-                            active={'Login' === activeItem}
-                        />
-                        <Menu.Item
-                            as={Link}
-                            to="/signup"
-                            name="Signup"
-                            // position="right"
-                            onClick={this.handleClick}
-                            active={'Signup' === activeItem}
-                        />
-                        <Menu.Item
-                            as={Link}
-                            to="/logout"
-                            name="Logout"
-                            // position="right"
-                            onClick={this.handleClick}
-                            active={'Logout' === activeItem}
-                        />
+                        {userLoggedIn && (
+                            <Menu.Item
+                                as={Link}
+                                to="/myList"
+                                name="MyList"
+                                // position="right"
+                                onClick={this.handleClick}
+                                active={'MyList' === activeItem}
+                            />
+                        )}
+                        {!userLoggedIn && (
+                            <Menu.Item
+                                as={Link}
+                                to="/login"
+                                name="Login"
+                                // position="right"
+                                onClick={this.handleClick}
+                                active={'Login' === activeItem}
+                            />
+                        )}
+                        {!userLoggedIn && (
+                            <Menu.Item
+                                as={Link}
+                                to="/signup"
+                                name="Signup"
+                                // position="right"
+                                onClick={this.handleClick}
+                                active={'Signup' === activeItem}
+                            />
+                        )}
+                        {userLoggedIn && (
+                            <Menu.Item
+                                as={Link}
+                                to="/logout"
+                                name="Logout"
+                                // position="right"
+                                onClick={this.handleClick}
+                                active={'Logout' === activeItem}
+                            />
+                        )}
                     </Menu.Menu>
                 </Menu>
                 <div style={{ marginTop: 50 }}>
                     <Route exact path="/" component={Home} />
                     <Route path="/search" component={Search} />
-                    <Route path="/login" component={Login} />
+                    <Route
+                        path="/login"
+                        render={props => {
+                            return <Login {...props} checkAuth={this.checkAuth} />;
+                        }}
+                    />
                     <Route path="/signup" component={Signup} />
                     <Route path="/myList" component={MyList} />
-                    <Route path="/logout" component={Logout} />
+                    <Route
+                        path="/logout"
+                        render={props => {
+                            return <Logout {...props} checkAuth={this.checkAuth} />;
+                        }}
+                    />
                     <Route />
                 </div>
             </div>
