@@ -112,7 +112,17 @@ async function run() {
             return data;
         }, setCodeJSON);
 
-        console.log(`${setName} | scraped`);
+        // Check to make sure setCode is mapped in JSON
+        cardList.forEach(card => {
+            if (!card.setCode) {
+                throw new Error(`Set code was not defined in JSON mapper for ${card.setName}`);
+            }
+        });
+
+        // Alert the admin of scrape progress
+        console.log(
+            `${setName} | ${setCodeJSON[setName] ? setCodeJSON[setName] : 'NONE'} | scraped`
+        );
 
         cardList = cardList.concat(cards);
     }
