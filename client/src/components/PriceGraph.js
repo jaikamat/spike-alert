@@ -28,8 +28,6 @@ class PriceGraph extends React.Component {
         const width = window.innerWidth || document.body.clientWidth;
         let gradientStroke1 = myChartRef.createLinearGradient(0, 0, width, 0);
         let gradientStroke2 = myChartRef.createLinearGradient(0, 0, width, 0);
-        let backgroundGradient1 = myChartRef.createLinearGradient(0, 0, width, 0);
-        let backgroundGradient2 = myChartRef.createLinearGradient(0, 0, width, 0);
 
         const firstColor1 = '#7C4DFF';
         const secondColor1 = '#448AFF';
@@ -51,33 +49,21 @@ class PriceGraph extends React.Component {
         gradientStroke2.addColorStop(0.6, thirdColor2);
         gradientStroke2.addColorStop(1, fourthColor2);
 
-        backgroundGradient1.addColorStop(0, 'rgba(124, 77, 255, 0.5)');
-        backgroundGradient1.addColorStop(0.3, 'rgba(68, 138, 255, 0.5)');
-        backgroundGradient1.addColorStop(0.6, 'rgba(0, 188, 212, 0.5)');
-        backgroundGradient1.addColorStop(1, 'rgba(29, 233, 182, 0.5)');
-
-        backgroundGradient2.addColorStop(0, 'rgba(244, 67, 54, 0.5)');
-        backgroundGradient2.addColorStop(0.3, 'rgba(245, 0, 87, 0.5)');
-        backgroundGradient2.addColorStop(0.6, 'rgba(255, 64, 129, 0.5)');
-        backgroundGradient2.addColorStop(1, 'rgba(255, 145, 0, 0.5)');
-
         new Chart(myChartRef, {
             type: 'line',
             data: {
                 datasets: [
                     {
-                        label: 'Price',
+                        label: this.props.isOnlyFoil ? 'Foil' : 'Nonfoil',
                         data: price1Data,
-                        borderColor: gradientStroke1,
-                        // backgroundColor: backgroundGradient1,
+                        borderColor: this.props.isOnlyFoil ? gradientStroke2 : gradientStroke1,
                         fill: false,
                         pointRadius: 0
                     },
                     {
-                        label: 'Price',
+                        label: 'Foil',
                         data: price2Data,
                         borderColor: gradientStroke2,
-                        // backgroundColor: gradientStroke2,
                         fill: false,
                         pointRadius: 0
                     }
@@ -120,7 +106,18 @@ class PriceGraph extends React.Component {
                 },
                 tooltips: {
                     mode: 'index',
-                    intersect: false
+                    intersect: false,
+                    position: 'nearest',
+                    callbacks: {
+                        title: (tooltipItem, data) => {
+                            return moment(tooltipItem[0].xLabel).format('MMM Do, YYYY h:mm A');
+                        },
+                        label: (tooltipItem, data) => {
+                            return `${
+                                data.datasets[tooltipItem.datasetIndex].label
+                            }: $${tooltipItem.yLabel.toFixed(2)}`;
+                        }
+                    }
                 }
             }
         });

@@ -65,6 +65,7 @@ class CardList extends React.Component {
                     priceHistory={item.priceHistory}
                     setIcon={item.setIcon}
                     foilMultiplier={item.foilMultiplier}
+                    isOnlyFoil={item.isOnlyFoil}
                     userList={this.state.userList}
                     addCardToList={this.addCardToList}
                     removeCardFromList={this.removeCardFromList}
