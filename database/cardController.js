@@ -111,6 +111,18 @@ async function updatePriceTrends() {
     return 'Pricing update complete!';
 }
 
+/**
+ * Returns a limited list of the largest price winners (100% increase or more) over a two-day period, for SMS
+ */
+async function getBiggestGainers() {
+    return await CardModel.find({ 'priceTrends.two_day.price1': { $gt: 100 } })
+        .sort({
+            'priceTrends.two_day.price1': -1
+        })
+        .limit(15); // limit to 15 for now
+}
+
 module.exports.updatePriceTrends = updatePriceTrends;
 module.exports.persistCards = persistCards;
 module.exports.cacheCardTitles = cacheCardTitles;
+module.exports.getBiggestGainers = getBiggestGainers;

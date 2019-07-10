@@ -6,6 +6,8 @@ const upload = multer({ storage: storage });
 const updatePriceTrends = require('../database/cardController').updatePriceTrends;
 const persistCards = require('../database/cardController').persistCards;
 const cacheCardTitles = require('../database/cardController').cacheCardTitles;
+const getBiggestGainers = require('../database/cardController').getBiggestGainers;
+const sendCardsSMS = require('../utils/send_sms');
 
 /**
  * Retrieves a date from custom-named filenames
@@ -55,6 +57,10 @@ router.post('/update-prices', function(req, res, next) {
     updatePriceTrends()
         .then(msg => {
             res.send(msg);
+            return getBiggestGainers();
+        })
+        .then(cards => {
+            return sendCardsSMS(cards);
         })
         .catch(console.log);
 });
