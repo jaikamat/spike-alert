@@ -7,3 +7,6 @@
 
 #puppeteer scrape session data
 /scrape/tmp
+
+#secret stash
+/.env
