@@ -71,20 +71,19 @@ async function cacheCardTitles() {
  * (to prevent querying the whole databse and using up all available V8 memory)
  */
 async function updatePriceTrends() {
-    let bulkOps = [];
     let count = 0;
-    let docs;
-    const CHUNK_SIZE = 500;
+    const CHUNK_SIZE = 1000;
 
     while (true) {
-        docs = await CardModel.find({})
+        const docs = await CardModel.find({})
             .skip(count * CHUNK_SIZE)
-            .limit(CHUNK_SIZE);
+            .limit(CHUNK_SIZE)
+            .lean();
 
         if (docs.length === 0) break;
 
-        docs.forEach(doc => {
-            let op = {
+        const bulkOps = docs.map(doc => {
+            return {
                 updateOne: {
                     filter: { _id: doc._id },
                     update: {
@@ -93,8 +92,6 @@ async function updatePriceTrends() {
                     }
                 }
             };
-
-            bulkOps.push(op);
         });
 
         await CardModel.bulkWrite(bulkOps);
@@ -104,7 +101,6 @@ async function updatePriceTrends() {
                 bulkOps.length}`
         );
 
-        bulkOps = [];
         count += 1;
     }
 
