@@ -7,9 +7,6 @@ const NameCacheModel = require('../database/nameCache').NameCacheModel;
 router.get('/', async function(req, res, next) {
     const name = req.query.name;
     const cards = await CardModel.find({ name: name });
-
-    console.log(`User searched for ${name}`);
-
     res.send(cards);
 });
 
