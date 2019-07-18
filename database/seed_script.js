@@ -1,45 +1,66 @@
 const fs = require('fs');
-const axios = require('axios');
-const FormData = require('form-data');
+const mongoose = require('mongoose');
+const MONGO_LINK = 'mongodb://localhost/test';
+const CardModel = require('./card').CardModel;
+const persistCards = require('./cardController').persistCards;
+const updatePriceTrends = require('./cardController').updatePriceTrends;
 
-// Get filenames
-let filenames = fs.readdirSync('./scrape/scraped_data');
+mongoose.set('useFindAndModify', false);
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+    console.log('MongoDB connecton open');
+});
 
 /**
- * Iterates over each scraped filename, creating formdata and uploading it to the db via POST.
+ * Retrieves a date from custom-named filenames
+ * @param {string} filename
+ */
+function getDateFromFilename(filename) {
+    const removeExtension = filename.split('.')[0];
+    const unixDate = removeExtension.split('--')[1];
+    const unixDateNum = parseInt(unixDate);
+
+    return new Date(unixDateNum);
+}
+
+/**
+ * Iterates over each scraped filename, creating formdata and uploading it to the db directly
  */
 async function uploadScrapedFiles() {
-    for (let i = 0; i < filenames.length; i++) {
-        let form = new FormData();
-        form.append('prices', fs.createReadStream(`./scrape/scraped_data/${filenames[i]}`));
+    const filenames = fs.readdirSync('./scrape/scraped_data');
 
-        let data = {
-            method: 'POST',
-            url: 'http://localhost:1337/upload',
-            data: form,
-            headers: { ...form.getHeaders() }
-        };
-
-        await axios(data)
-            .then(() => {
-                console.log(`${filenames[i]} uploaded`);
-            })
-            .catch(console.log);
+    for (let filename of filenames) {
+        const filedata = require(`../scrape/scraped_data/${filename}`);
+        const scrapeDateTime = getDateFromFilename(filename);
+        await persistCards(filedata, scrapeDateTime);
+        console.log(`Seeded ${filename}`);
     }
 }
 
-/**
- * Updates the prices after all the scraped json has been persisted
- */
-async function updatePrices() {
-    return await axios.post('http://localhost:1337/upload/update-prices');
-}
-
 async function seed() {
-    await uploadScrapedFiles();
-    await updatePrices();
+    try {
+        await mongoose.connect(MONGO_LINK, { useNewUrlParser: true });
+
+        try {
+            await CardModel.collection.drop();
+            console.log(`Collection 'Card' was dropped`);
+        } catch (error) {
+            if (error.code === 26) {
+                console.log(`Collection 'Card' not found`);
+            } else {
+                throw error;
+            }
+        }
+
+        await uploadScrapedFiles();
+        await updatePriceTrends();
+        await mongoose.connection.close();
+        console.log('Database seeded');
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-seed()
-    .then(() => console.log('Database seeded'))
-    .catch(err => console.log(err));
+seed();
