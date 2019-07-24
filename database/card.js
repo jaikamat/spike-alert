@@ -23,7 +23,11 @@ const CardSchema = new mongoose.Schema({
         all_time: { price1: Number, price2: Number }
     },
     foilMultiplier: Number,
-    setIcon: String
+    setIcon: String,
+    currentPrice: {
+        price1: Number,
+        price2: Number
+    }
 });
 
 const CardModel = mongoose.model('Card', CardSchema);

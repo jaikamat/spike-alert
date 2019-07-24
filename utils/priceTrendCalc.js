@@ -148,6 +148,21 @@ function collatePriceTrends(datesGrouped, orderedDatesUniq, lengthOfTime) {
 }
 
 /**
+ * Takes in a priceHistory array and returns the most recent price objects from it,
+ * yielding the current price
+ * @param {array} priceHistory
+ */
+function getCurrentPrice(priceHistory) {
+    const sortedByDate = _.sortBy(priceHistory, 'date').reverse();
+    const recentElement = sortedByDate[0];
+
+    return {
+        price1: recentElement.price1,
+        price2: recentElement.price2
+    };
+}
+
+/**
  * Takes in an array of priceHistory objects (have date and price info)
  * and returns their price changes over various predefined time ranges
  * @param {array} priceHistory
@@ -188,3 +203,4 @@ function calculateFoilMultiplier(priceHistory) {
 
 module.exports.createPriceTrends = createPriceTrends;
 module.exports.calculateFoilMultiplier = calculateFoilMultiplier;
+module.exports.getCurrentPrice = getCurrentPrice;

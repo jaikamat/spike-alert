@@ -2,6 +2,7 @@ const CardModel = require('./card').CardModel;
 const NameCacheModel = require('./nameCache').NameCacheModel;
 const createPriceTrends = require('../utils/priceTrendCalc').createPriceTrends;
 const calculateFoilMultiplier = require('../utils/priceTrendCalc').calculateFoilMultiplier;
+const getCurrentPrice = require('../utils/priceTrendCalc').getCurrentPrice;
 const hash = require('../utils/hash').hash;
 const _ = require('lodash');
 
@@ -72,7 +73,7 @@ async function cacheCardTitles() {
  */
 async function updatePriceTrends() {
     let count = 0;
-    const CHUNK_SIZE = 1000;
+    const CHUNK_SIZE = 500;
 
     while (true) {
         const docs = await CardModel.find({})
@@ -88,7 +89,8 @@ async function updatePriceTrends() {
                     filter: { _id: doc._id },
                     update: {
                         priceTrends: createPriceTrends(doc.priceHistory),
-                        foilMultiplier: calculateFoilMultiplier(doc.priceHistory)
+                        foilMultiplier: calculateFoilMultiplier(doc.priceHistory),
+                        currentPrice: getCurrentPrice(doc.priceHistory)
                     }
                 }
             };
