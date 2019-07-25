@@ -127,7 +127,7 @@ async function run() {
         cardList = cardList.concat(cards);
     }
 
-    browser.close();
+    await browser.close();
     return cardList;
 }
 
