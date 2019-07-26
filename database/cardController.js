@@ -47,12 +47,13 @@ async function persistCards(cards, date) {
         };
     });
 
-    // See https://stackoverflow.com/questions/39988848/trying-to-do-a-bulk-upsert-with-mongoose-whats-the-cleanest-way-to-do-this
-    // For syntax and non-documented quirks
-    // Important not to call CardModel.collection.bulkWrite() here
-    let bulkWriteInfo = await CardModel.bulkWrite(bulkOperations);
+    try {
+        await CardModel.bulkWrite(bulkOperations, { ordered: false });
+    } catch (error) {
+        console.log(error);
+    }
 
-    return bulkWriteInfo;
+    return 'Cards persisted';
 }
 
 /**
@@ -96,7 +97,11 @@ async function updatePriceTrends() {
             };
         });
 
-        await CardModel.bulkWrite(bulkOps);
+        try {
+            await CardModel.bulkWrite(bulkOps, { ordered: false });
+        } catch (error) {
+            console.log(error);
+        }
 
         console.log(
             `Updated prices for cards ${count * CHUNK_SIZE + 1}-${count * CHUNK_SIZE +
