@@ -3,7 +3,6 @@
 
 #scraped data
 /scrape/scraped_data
-/scrape/scraped_images
 
 #puppeteer scrape session data
 /scrape/tmp

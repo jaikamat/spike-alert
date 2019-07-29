@@ -98,11 +98,8 @@ async function run() {
                     isOnlyFoil: false
                 };
 
-                // Performs a check to see if only price2 has been logged
-                // This reformats the card object, and proves a card is only foil
+                // Performs a check to see if only price2 has been logged (means it's only a foil print)
                 if (!price1 && price2) {
-                    cardData.price1 = price2;
-                    cardData.price2 = '';
                     cardData.isOnlyFoil = true;
                 }
 

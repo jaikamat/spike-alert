@@ -45,6 +45,7 @@ router.get('/highlow', async function(req, res) {
             .sort({ 'priceTrends.two_day.price2': -1 })
             .limit(10);
         const losersNonfoil = await CardModel.find(
+            // If sorted ascending, null values will be counted, so we need to exclude them
             {
                 'priceTrends.two_day.price1': { $ne: null }
             },
@@ -53,7 +54,6 @@ router.get('/highlow', async function(req, res) {
             .sort({ 'priceTrends.two_day.price1': 1 })
             .limit(10);
         const losersFoil = await CardModel.find(
-            // If sorted ascending, null values will be counted, so we need to exclude them
             {
                 'priceTrends.two_day.price2': { $ne: null }
             },
