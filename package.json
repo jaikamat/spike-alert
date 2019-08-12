@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "start": "node ./bin/www",
-        "scrape": "node ./scrape/scrape.js"
+        "scrape": "node ./scrape/scrape.js",
+        "seed": "node database/seed_script.js"
     },
     "dependencies": {
         "axios": "^0.18.1",
