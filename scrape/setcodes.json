@@ -252,5 +252,13 @@
     "Core 2020": "M20",
     "MCQ Promos": "MCQPROM",
     "Planeswalker Weekend Promos": "PWWKND",
-    "Signature Spellbook: Gideon": "SS2"
+    "Signature Spellbook: Gideon": "SS2",
+    "Core 2019 - Promo Pack": "M19PP",
+    "Core 2020 - Promo Pack": "M20PP",
+    "Dominaria - Promo Pack": "DOMPP",
+    "Guilds of Ravnica - Promo Pack": "GRNPP",
+    "Ixalan - Promo Pack": "XLNPP",
+    "Ravnica Allegiance - Promo Pack": "RNAPP",
+    "Rivals of Ixalan - Promo Pack": "RIXPP",
+    "War of the Spark - Promo Pack": "WARPP"
 }
