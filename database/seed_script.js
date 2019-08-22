@@ -1,6 +1,7 @@
+const dotenv = require('dotenv').config();
 const fs = require('fs');
 const mongoose = require('mongoose');
-const MONGO_LINK = 'mongodb://localhost/test';
+const MONGO_LINK = process.env.DOCKER ? process.env.MONGO_LINK_DOCKER : process.env.MONGO_LINK_DEV;
 const CardModel = require('./card').CardModel;
 const persistCards = require('./cardController').persistCards;
 const updatePriceTrends = require('./cardController').updatePriceTrends;
