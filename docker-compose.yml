@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-    web:
+    api:
         container_name: spike_alert
         build: .
         ports:
@@ -10,6 +10,7 @@ services:
             - DOCKER=1
         depends_on:
             - mongo
+        restart: always
     mongo:
         container_name: mongo
         image: mongo
