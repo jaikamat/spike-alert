@@ -6,7 +6,7 @@ const CardModel = require('./card').CardModel;
 const persistCards = require('./cardController').persistCards;
 const updatePriceTrends = require('./cardController').updatePriceTrends;
 // This is delicate and subject to change
-const DATA_URI = '../spike_alert_scrape/scrape/scraped_data';
+const DATA_URI = '/Users/admin/Documents/dev_projects/spike_alert_scrape/scrape/scraped_data';
 
 mongoose.set('useFindAndModify', false);
 const db = mongoose.connection;
@@ -35,7 +35,7 @@ async function uploadScrapedFiles() {
     const filenames = fs.readdirSync(DATA_URI);
 
     for (let filename of filenames) {
-        const filedata = require(`/Users/admin/Documents/dev_projects/spike_alert_scrape/scrape/scraped_data/${filename}`);
+        const filedata = require(`${DATA_URI}/${filename}`);
         const scrapeDateTime = getDateFromFilename(filename);
         await persistCards(filedata, scrapeDateTime);
         console.log(`Seeded ${filename}`);
