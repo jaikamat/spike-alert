@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Specificity required to enable axios to make "credentialized" client requests
 app.use(
     cors({
-        origin: 'http://localhost:3000',
+        origin: ['http://localhost:3000'],
         credentials: true
     })
 );
