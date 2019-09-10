@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start-dev": "MODE=DEV node ./bin/www",
-        "start-prod": "MODE=PROD node ./bin/www",
+        "start": "MODE=PROD node ./bin/www",
         "scrape": "node ./scrape/scrape.js",
         "seed": "node database/seed_script.js"
     },
