@@ -48,12 +48,10 @@ async function persistCards(cards, date) {
     });
 
     try {
-        await CardModel.bulkWrite(bulkOperations, { ordered: false });
+        return await CardModel.bulkWrite(bulkOperations, { ordered: false });
     } catch (error) {
         console.log(error);
     }
-
-    return 'Cards persisted';
 }
 
 /**

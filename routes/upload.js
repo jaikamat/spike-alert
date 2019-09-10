@@ -1,8 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 const updatePriceTrends = require('../database/cardController').updatePriceTrends;
 const persistCards = require('../database/cardController').persistCards;
 const cacheCardTitles = require('../database/cardController').cacheCardTitles;
@@ -10,33 +7,19 @@ const getBiggestGainers = require('../database/cardController').getBiggestGainer
 const sendCardsSMS = require('../utils/send_sms');
 
 /**
- * Retrieves a date from custom-named filenames
- * @param {string} filename
- */
-function getDateFromFilename(filename) {
-    const removeExtension = filename.split('.')[0];
-    const unixDate = removeExtension.split('--')[1];
-    const unixDateNum = parseInt(unixDate);
-
-    return new Date(unixDateNum);
-}
-
-/**
  * Posts JSON reports scraped from CS to the database
  * and updates cached card titles
  */
-router.post('/', upload.single('prices'), function(req, res, next) {
-    const string = req.file.buffer.toString(); // Convert the buffer to a string
-    const cardArray = JSON.parse(string); // Convert the string to a list of cards
+router.post('/', function(req, res, next) {
+    const cardArray = req.body;
+    const scrapeDateTime = new Date();
 
-    // Parse date from passed file for use in dateHistory array
-    const scrapeDateTime = getDateFromFilename(req.file.originalname);
-
-    console.log(`Parsing file ${req.file.originalname}`);
+    console.log(`Preparing to upsert ${cardArray.length} new cards...`);
     console.log(`Scrape DateTime: ${scrapeDateTime}`);
 
     persistCards(cardArray, scrapeDateTime)
         .then(info => {
+            console.log(info);
             console.log(`Bulk write ${info.result.ok === 1 ? 'OK' : 'ERROR'}`);
             return cacheCardTitles();
         })
@@ -60,7 +43,8 @@ router.post('/update-prices', function(req, res, next) {
             return getBiggestGainers();
         })
         .then(cards => {
-            return sendCardsSMS(cards);
+            // TODO: Explore better formatting for sending texts
+            // return sendCardsSMS(cards);
         })
         .catch(console.log);
 });
