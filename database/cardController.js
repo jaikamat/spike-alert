@@ -23,6 +23,9 @@ function filterPriceString(price) {
  * @param {Date} date Date to record the price
  */
 async function persistCards(cards, date) {
+    const CHUNK_SIZE = 500;
+    let count = 1;
+
     // See MongoDB docs, NOT Mongoose ODM docs for this syntax
     let bulkOperations = cards.map(card => {
         return {
@@ -47,11 +50,28 @@ async function persistCards(cards, date) {
         };
     });
 
-    try {
-        return await CardModel.bulkWrite(bulkOperations, { ordered: false });
-    } catch (error) {
-        console.log(error);
+    // Chunk the uploads so MongoDB Atlas doesn't go berserk and stall
+    while (true) {
+        const docs = bulkOperations.splice(0, CHUNK_SIZE);
+
+        try {
+            await CardModel.bulkWrite(docs, { ordered: false });
+        } catch (err) {
+            console.log(err);
+        }
+
+        console.log(`Written chunk ${count}`);
+
+        count += 1;
+
+        if (bulkOperations.length === 0) break;
     }
+
+    return {
+        result: {
+            ok: 1
+        }
+    };
 }
 
 /**
@@ -68,7 +88,7 @@ async function cacheCardTitles() {
 
 /**
  * Performs a bulk update of all card pricing trend data by using chunking
- * (to prevent querying the whole databse and using up all available V8 memory)
+ * (to prevent querying the whole database and using up all available V8 memory)
  */
 async function updatePriceTrends() {
     let count = 0;
