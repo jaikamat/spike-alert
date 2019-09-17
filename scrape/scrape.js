@@ -309,7 +309,6 @@ async function run() {
     const options = {
         headless: true,
         ignoreHTTPSErrors: true,
-        userDataDir: './scrape/tmp', // Use to store session data
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     };
 
