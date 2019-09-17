@@ -5,6 +5,7 @@ const persistCards = require('../database/cardController').persistCards;
 const cacheCardTitles = require('../database/cardController').cacheCardTitles;
 const getBiggestGainers = require('../database/cardController').getBiggestGainers;
 const sendCardsSMS = require('../utils/send_sms');
+const scrape = require('../scrape/scrape').scrape;
 const fetch = require('node-fetch');
 
 /**
@@ -64,10 +65,7 @@ router.post('/gcf-update', async function(req, res, next) {
     req.setTimeout(1800000); // Set 30 min timeout
 
     try {
-        const cardData = await fetch(
-            'https://us-central1-robust-heaven-247118.cloudfunctions.net/scrape-cardsphere'
-        );
-        const cards = await cardData.json();
+        const cards = await scrape();
         const scrapeDateTime = new Date();
 
         console.log(`Preparing to upsert ${cards.length} new cards...`);
